@@ -231,9 +231,9 @@
     </header>
 
     <div class="model-dropdown" id="modelDropdown">
-        <div class="model-option selected" data-model="gemini-2.0-flash-exp">Gemini 2.0 Flash (Gratis)</div>
+        <div class="model-option selected" data-model="gemini-2.0-flash">Gemini 2.0 Flash ⚡</div>
+        <div class="model-option" data-model="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</div>
         <div class="model-option" data-model="gemini-1.5-flash">Gemini 1.5 Flash</div>
-        <div class="model-option" data-model="gemini-1.5-pro">Gemini 1.5 Pro</div>
         <div class="model-option" data-model="gemma-3-27b-it">Gemma 3 27B</div>
     </div>
 
@@ -272,10 +272,9 @@
     </div>
 
     <script>
-        // ============ TU API KEY DE GEMINI ============
         const API_KEY = 'AIzaSyBi-kpvk67c4tIOkDFPas144BEQrDiUlN0';
         
-        let currentModel = 'gemini-2.0-flash-exp';
+        let currentModel = 'gemini-2.0-flash';
         let chatHistory = [];
         let isProcessing = false;
 
@@ -290,7 +289,7 @@
                 document.querySelectorAll('.model-option').forEach(o => o.classList.remove('selected'));
                 this.classList.add('selected');
                 document.getElementById('modelDropdown').classList.remove('active');
-                chatHistory = []; // Limpiar historial al cambiar modelo
+                chatHistory = [];
             });
         });
 
@@ -330,9 +329,8 @@
                 }
             } catch (error) {
                 removeTypingIndicator(typingId);
-                console.error(error);
                 addMessage('Error: ' + error.message, 'ia');
-                chatHistory.pop(); // Quitar el mensaje del usuario si falló
+                chatHistory.pop();
             }
             
             isProcessing = false;
@@ -344,13 +342,11 @@
             
             const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: chatHistory,
                     systemInstruction: {
-                        parts: [{ text: 'Eres un asistente útil, amable y siempre respondes en español.' }]
+                        parts: [{ text: 'Eres un asistente útil y amable. Responde siempre en español.' }]
                     },
                     generationConfig: {
                         temperature: 0.7,
@@ -402,8 +398,7 @@
         }
 
         function startVoice() {
-            const input = document.getElementById('chatInput');
-            input.focus();
+            document.getElementById('chatInput').focus();
         }
     </script>
 
