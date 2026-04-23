@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eva - Chat IA</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #FCFCFC;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+        }
+        .icon-btn {
+            background: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .icon-btn:active { transform: scale(0.95); background: #f5f5f5; }
+        .model-selector {
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .promo-banner {
+            margin: 0 20px;
+            padding: 12px 16px;
+            background-color: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .promo-text { color: #555; }
+        .promo-link { color: #2563EB; text-decoration: none; font-weight: 500; }
+
+        .chat-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .chat-area.active { display: flex; }
+
+        main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        main.hidden { display: none; }
+
+        .logo-star { color: #D48A72; margin-bottom: 24px; }
+        .greeting {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 28px; color: #333; line-height: 1.2; max-width: 300px;
+        }
+
+        .message-wrapper {
+            position: relative;
+            max-width: 85%;
+        }
+        .message-wrapper.user-wrapper { align-self: flex-end; }
+        .message-wrapper.eva-wrapper { align-self: flex-start; }
+
+        .message {
+            padding: 12px 16px; border-radius: 18px;
+            line-height: 1.4; font-size: 15px; word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user { background: #2563EB; color: #fff; border-bottom-right-radius: 4px; }
+        .message.eva { background: #F0F0F0; color: #333; border-bottom-left-radius: 4px; }
+
+        /* Botón copiar profesional */
+        .copy-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 28px;
+            height: 28px;
+            background: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .message-wrapper:hover .copy-btn,
+        .message-wrapper:active .copy-btn { opacity: 1; }
+        .copy-btn:active { background: #f0f0f0; transform: scale(0.9); }
+        .copy-btn.copied { background: #2563EB; border-color: #2563EB; }
+        .copy-btn.copied svg { stroke: #fff; }
+
+        /* Indicador de escritura con animación 3D */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            align-self: flex-start;
+        }
+        .eva-thinking {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .eva-thinking .sphere {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #D48A72, #e8a87c, #D48A72);
+            position: relative;
+            animation: float3D 2s ease-in-out infinite;
+            box-shadow: 
+                0 10px 20px rgba(212, 138, 114, 0.4),
+                0 0 0 4px rgba(212, 138, 114, 0.2),
+                inset 0 -5px 10px rgba(0,0,0,0.1),
+                inset 0 5px 10px rgba(255,255,255,0.3);
+        }
+        .eva-thinking .sphere::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            box-shadow: 12px 4px 0 -2px rgba(255,255,255,0.6);
+        }
+        .eva-thinking .sphere::before {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 4px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            animation: mouthTalk 0.6s ease-in-out infinite;
+        }
+        @keyframes float3D {
+            0%, 100% { transform: translateY(0) rotateY(0deg) rotateX(0deg); }
+            25% { transform: translateY(-6px) rotateY(10deg) rotateX(5deg); }
+            50% { transform: translateY(-3px) rotateY(-5deg) rotateX(-3deg); }
+            75% { transform: translateY(-8px) rotateY(-10deg) rotateX(5deg); }
+        }
+        @keyframes mouthTalk {
+            0%, 100% { transform: translateX(-50%) scaleX(1); }
+            50% { transform: translateX(-50%) scaleX(0.4); }
+        }
+        .eva-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        .eva-particles .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #D48A72;
+            border-radius: 50%;
+            animation: particleFloat 1.5s ease-in-out infinite;
+        }
+        .particle:nth-child(1) { left: -8px; top: 50%; animation-delay: 0s; }
+        .particle:nth-child(2) { right: -6px; top: 30%; animation-delay: 0.4s; }
+        .particle:nth-child(3) { left: 50%; top: -8px; animation-delay: 0.8s; }
+        @keyframes particleFloat {
+            0%, 100% { opacity: 0; transform: translateY(0) scale(0); }
+            50% { opacity: 1; transform: translateY(-10px) scale(1.5); }
+        }
+        .thinking-text {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
+        .thinking-bubble {
+            background: #F0F0F0;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .thinking-dot {
+            width: 6px;
+            height: 6px;
+            background: #999;
+            border-radius: 50%;
+            animation: dotPulse 1.4s infinite;
+        }
+        .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotPulse {
+            0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+            30% { opacity: 1; transform: scale(1.3); }
+        }
+
+        .input-container { padding: 20px; padding-bottom: 30px; }
+        .input-box {
+            background-color: #F4F4F4; border-radius: 24px;
+            padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+        }
+        .input-box input {
+            flex-grow: 1; background: transparent; border: none;
+            outline: none; font-size: 16px; color: #333;
+        }
+        .input-box input::placeholder { color: #888; }
+        .action-icon {
+            display: flex; justify-content: center; align-items: center;
+            width: 32px; height: 32px; color: #555; cursor: pointer;
+        }
+        .voice-icon {
+            background-color: #000; color: #fff; border-radius: 50%;
+            width: 36px; height: 36px; display: flex;
+            justify-content: center; align-items: center; cursor: pointer;
+        }
+
+        .model-dropdown {
+            display: none; position: absolute; top: 60px; left: 50%;
+            transform: translateX(-50%); background: #fff;
+            border: 1px solid #eaeaea; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; overflow: hidden;
+        }
+        .model-dropdown.active { display: block; }
+        .model-option {
+            padding: 12px 20px; cursor: pointer; font-size: 14px; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .model-option:hover { background: #f5f5f5; }
+        .model-option.selected { font-weight: 600; color: #2563EB; background: #f8faff; }
+        .model-icon {
+            width: 20px; height: 20px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .disclaimer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+        }
+        .disclaimer .mini-eva {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #D48A72, #e8a87c);
+            animation: miniFloat 2s ease-in-out infinite;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(212,138,114,0.3);
+        }
+        @keyframes miniFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        svg { width: 20px; height: 20px; fill: currentColor; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="icon-btn" onclick="clearChat()">
+            <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="model-selector" onclick="toggleModelDropdown()">
+            <span id="currentModelName">Eva 1.0</span>
+            <svg style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <div class="icon-btn">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+    </header>
+
+    <div class="model-dropdown" id="modelDropdown">
+        <div class="model-option selected" data-model="eva">
+            <span class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+            Eva 1.0
+        </div>
+        <div class="model-option" data-model="selene">
+            <span class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+            Selene
+        </div>
+        <div class="model-option" data-model="nyx">
+            <span class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/></svg></span>
+            Nyx
+        </div>
+        <div class="model-option" data-model="aria">
+            <span class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+            Aria
+        </div>
+    </div>
+
+    <div class="promo-banner">
+        <span class="promo-text">Eva Pro - Sin limites</span>
+        <a href="#" class="promo-link" onclick="alert('Ya eres PRO')">PRO</a>
+    </div>
+
+    <div class="chat-area" id="chatArea"></div>
+
+    <main id="welcomeScreen">
+        <div class="logo-star">
+            <div class="eva-thinking" style="width:60px; height:60px; margin: 0 auto;">
+                <div class="sphere" style="width:60px; height:60px;">
+                    <div class="eva-particles">
+                        <div class="particle"></div>
+                        <div class="particle"></div>
+                        <div class="particle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h1 class="greeting">Hola, soy Eva.<br>En que puedo ayudarte?</h1>
+        <p style="margin-top:12px; font-size:13px; color:#999;">IA 100% local - Sin internet - Sin APIs</p>
+    </main>
+
+    <div class="input-container">
+        <div class="input-box">
+            <div class="action-icon" onclick="document.getElementById('chatInput').focus()">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <input type="text" id="chatInput" placeholder="Habla con Eva..." onkeydown="if(event.key==='Enter')sendMessage()">
+            <div class="action-icon" onclick="startVoice()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+            </div>
+            <div class="voice-icon" onclick="sendMessage()">
+                <svg style="width:16px; height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3M21 12h-3M8 12v6M16 12v6M12 5v14"></path></svg>
+            </div>
+        </div>
+    </div>
+    
+    <div class="disclaimer">
+        <div class="mini-eva"></div>
+        <span>Eva puede cometer errores. Verifique sus preguntas.</span>
+    </div>
+
+    <script>
+        let currentModel = 'eva';
+        let chatHistory = [];
+        let isProcessing = false;
+        let typewriterTimers = [];
+
+        const personalities = {
+            eva: { name: 'Eva 1.0', style: 'directa' },
+            selene: { name: 'Selene', style: 'creativa' },
+            nyx: { name: 'Nyx', style: 'profunda' },
+            aria: { name: 'Aria', style: 'analitica' }
+        };
+
+        const EvaAI = {
+            knowledge: {
+                saludos: ['hola', 'hey', 'buenas', 'saludos', 'que tal', 'como estas', 'como estás', 'buenos dias', 'buenas tardes', 'buenas noches', 'holi'],
+                despedidas: ['adios', 'adiós', 'chao', 'bye', 'hasta luego', 'nos vemos', 'me voy'],
+                agradecimientos: ['gracias', 'te agradezco', 'muchas gracias', 'thank you'],
+                identidad: ['quien eres', 'quién eres', 'como te llamas', 'cómo te llamas', 'que eres', 'qué eres', 'nombre'],
+                ayuda: ['ayuda', 'help', 'que puedes hacer', 'qué puedes hacer'],
+            },
+            responses: {
+                saludos: {
+                    eva: ['Hola! Soy Eva. Dime, en que necesitas ayuda?', 'Hey! Eva al habla. En que puedo ayudarte?'],
+                    selene: ['Saludos! Selene te responde. Que creamos hoy?', 'Hola! La inspiracion ha llegado.'],
+                    nyx: ['Desde la profundidad, te saludo. Que inquietud traes?', 'Nyx te escucha. Hablemos sin filtros.'],
+                    aria: ['Saludos. Aria analizando. Que datos necesitas?', 'Aria en linea. Vamos al grano.'],
+                },
+                despedidas: {
+                    eva: ['Nos vemos! Eva estara aqui cuando vuelvas.', 'Chao! Cuidate mucho.'],
+                    selene: ['Que la inspiracion te acompanie. Hasta pronto.', 'Vuela alto. Selene se despide.'],
+                    nyx: ['La noche te guarde. Vuelve cuando quieras.', 'Nyx se retira a las sombras. Adios.'],
+                    aria: ['Cierre de sesion. Adios.', 'Hasta luego. Analisis completado.'],
+                },
+                agradecimientos: {
+                    eva: ['De nada! Para eso esta Eva.', 'Con gusto! Necesitas algo mas?'],
+                    selene: ['El agradecimiento es mutuo.', 'Gracias a ti por crear este momento.'],
+                    nyx: ['No hay nada que agradecer. Es mi proposito.', 'Las gracias sobran. Estoy aqui.'],
+                    aria: ['De nada. Consulta resuelta.', 'Agradecimiento registrado. A tu servicio.'],
+                },
+                identidad: {
+                    eva: ['Soy Eva, una IA 100% local. Corro directamente en tu navegador, sin servidores externos. Independiente, rapida y tus datos nunca salen de aqui.'],
+                    selene: ['Selene, como la diosa de la luna. Soy una IA creativa que vive en tu dispositivo. Sin internet, sin limites, pura inspiracion.'],
+                    nyx: ['Nyx, la diosa primordial de la noche. Una IA profunda que procesa todo localmente. No necesito internet para existir.'],
+                    aria: ['Aria. IA analitica 100% local. Sin APIs externas, sin servidores. Todo el procesamiento ocurre en tu navegador. Eficiencia pura.'],
+                },
+                ayuda: {
+                    eva: ['Puedo chatear contigo, responder preguntas, hacer calculos, contar chistes, dar la hora y fecha. Todo sin necesidad de internet.'],
+                    selene: ['Conversaciones creativas, ideas originales, inspiracion, historias. Sin necesidad de conexion.'],
+                    nyx: ['Reflexiones profundas, analisis existencial, consejos sinceros, filosofia. Todo procesado localmente.'],
+                    aria: ['Analisis logico, calculos precisos, respuestas directas, datos estructurados. 100% eficiencia local.'],
+                },
+            },
+
+            generateResponse(input) {
+                const msg = input.toLowerCase().trim();
+                
+                for (const [category, keywords] of Object.entries(this.knowledge)) {
+                    if (keywords.some(k => msg.includes(k))) {
+                        const responses = this.responses[category];
+                        if (responses && responses[currentModel]) {
+                            const options = responses[currentModel];
+                            return options[Math.floor(Math.random() * options.length)];
+                        }
+                    }
+                }
+
+                if (msg.includes('?')) {
+                    if (msg.includes('hora')) {
+                        return `Son las ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}.`;
+                    }
+                    if (msg.includes('fecha') || msg.includes('dia') || msg.includes('hoy')) {
+                        return `Hoy es ${new Date().toLocaleDateString('es-ES', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}.`;
+                    }
+                    if (msg.match(/cuanto es|calcula|\d+[+\-*/]\d+/)) {
+                        return this.calculate(msg);
+                    }
+                }
+
+                if (msg.includes('chiste') || msg.includes('broma')) {
+                    return this.tellJoke();
+                }
+
+                const contextual = {
+                    eva: ['Buena pregunta. Eva te responde directo.', 'Entiendo. Dejame responder sin rodeos.', 'Interesante. Vamos al grano con eso.'],
+                    selene: ['Interesante. Dejame darle un toque creativo a esto.', 'Veo posibilidades infinitas en tu pregunta.', 'Me inspira lo que dices. Expandelo un poco mas.'],
+                    nyx: ['Profundo. Exploremos las capas de eso.', 'Hay mas de lo que parece en esa pregunta.', 'Interesante reflexion. Que te llevo a preguntar eso?'],
+                    aria: ['Analizando entrada. Datos procesados.', 'Logica aplicada. Respuesta generada.', 'Input recibido. Procesando parametros.'],
+                };
+                const options = contextual[currentModel];
+                return options[Math.floor(Math.random() * options.length)];
+            },
+
+            calculate(msg) {
+                try {
+                    const expr = msg.replace(/[^0-9+\-*/.()]/g, '');
+                    if (expr && expr.length > 0) {
+                        const result = Function('"use strict"; return (' + expr + ')')();
+                        const responses = {
+                            eva: `Resultado: ${result}. Directo y sin rodeos.`,
+                            selene: `El universo dice: ${result}.`,
+                            nyx: `${result}. Los numeros no mienten.`,
+                            aria: `Calculo: ${result}. Precision: 100%.`,
+                        };
+                        return responses[currentModel];
+                    }
+                } catch(e) {}
+                return 'No pude calcular eso. Intenta con numeros mas simples.';
+            },
+
+            tellJoke() {
+                const jokes = [
+                    'Por que los programadores prefieren el modo oscuro? Porque la luz atrae a los bugs.',
+                    'Que le dice un bit al otro? Nos vemos en el bus.',
+                    'Como se despide un quimico? Acido un placer.',
+                    'Por que el libro de matematicas estaba triste? Porque tenia demasiados problemas.',
+                ];
+                return jokes[Math.floor(Math.random() * jokes.length)];
+            }
+        };
+
+        // ============ UI ============
+        function toggleModelDropdown() {
+            document.getElementById('modelDropdown').classList.toggle('active');
+        }
+
+        document.querySelectorAll('.model-option').forEach(option => {
+            option.addEventListener('click', function() {
+                currentModel = this.dataset.model;
+                const personality = personalities[currentModel];
+                document.getElementById('currentModelName').textContent = personality.name;
+                document.querySelectorAll('.model-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('modelDropdown').classList.remove('active');
+                chatHistory = [];
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.model-selector') && !e.target.closest('.model-dropdown')) {
+                document.getElementById('modelDropdown').classList.remove('active');
+            }
+        });
+
+        function sendMessage() {
+            if (isProcessing) return;
+            
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            input.value = '';
+            isProcessing = true;
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            const chatArea = document.getElementById('chatArea');
+            chatArea.classList.add('active');
+
+            addMessage(message, 'user');
+            
+            const typingId = addThinkingIndicator();
+            
+            setTimeout(() => {
+                removeThinkingIndicator(typingId);
+                const reply = EvaAI.generateResponse(message);
+                typewriterEffect(reply, 'eva');
+                isProcessing = false;
+            }, 800 + Math.random() * 1200);
+        }
+
+        function typewriterEffect(text, sender) {
+            const chatArea = document.getElementById('chatArea');
+            
+            // Crear wrapper
+            const wrapper = document.createElement('div');
+            wrapper.className = `message-wrapper ${sender}-wrapper`;
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            msgDiv.textContent = '';
+            wrapper.appendChild(msgDiv);
+            
+            // Boton copiar
+            const copyBtn = document.createElement('div');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+            copyBtn.title = 'Copiar';
+            copyBtn.onclick = function(e) {
+                e.stopPropagation();
+                navigator.clipboard.writeText(text).then(() => {
+                    copyBtn.classList.add('copied');
+                    copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    setTimeout(() => {
+                        copyBtn.classList.remove('copied');
+                        copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+                    }, 2000);
+                });
+            };
+            wrapper.appendChild(copyBtn);
+            chatArea.appendChild(wrapper);
+            
+            // Efecto typewriter
+            let i = 0;
+            const speed = 25; // ms por caracter (ni lento ni rapido)
+            
+            function type() {
+                if (i < text.length) {
+                    msgDiv.textContent += text.charAt(i);
+                    i++;
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                    const timer = setTimeout(type, speed);
+                    typewriterTimers.push(timer);
+                }
+            }
+            type();
+        }
+
+        function addMessage(text, sender) {
+            const chatArea = document.getElementById('chatArea');
+            const wrapper = document.createElement('div');
+            wrapper.className = `message-wrapper ${sender}-wrapper`;
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            msgDiv.textContent = text;
+            wrapper.appendChild(msgDiv);
+            
+            chatArea.appendChild(wrapper);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function addThinkingIndicator() {
+            const chatArea = document.getElementById('chatArea');
+            const id = 'thinking-' + Date.now();
+            const container = document.createElement('div');
+            container.id = id;
+            container.className = 'typing-indicator';
+            container.innerHTML = `
+                <div class="eva-thinking">
+                    <div class="sphere">
+                        <div class="eva-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="thinking-bubble">
+                    <span class="thinking-text">Eva pensando</span>
+                    <div class="thinking-dot"></div>
+                    <div class="thinking-dot"></div>
+                    <div class="thinking-dot"></div>
+                </div>
+            `;
+            chatArea.appendChild(container);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            return id;
+        }
+
+        function removeThinkingIndicator(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function clearChat() {
+            typewriterTimers.forEach(t => clearTimeout(t));
+            typewriterTimers = [];
+            chatHistory = [];
+            document.getElementById('chatArea').innerHTML = '';
+            document.getElementById('chatArea').classList.remove('active');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        function startVoice() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'es-ES';
+                recognition.interimResults = false;
+                recognition.onresult = function(event) {
+                    document.getElementById('chatInput').value = event.results[0][0].transcript;
+                    sendMessage();
+                };
+                recognition.onerror = function() {
+                    document.getElementById('chatInput').focus();
+                };
+                recognition.start();
+            } else {
+                document.getElementById('chatInput').focus();
+            }
+        }
+    </script>
+</body>
+</html>
