@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eva Admin</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+            min-height: 100dvh;
+            padding-bottom: 40px;
+        }
+        h1 { color: #D48A72; margin-bottom: 4px; font-size: 22px; }
+        .subtitle { color: #777; font-size: 12px; margin-bottom: 24px; }
+
+        .section {
+            background: #16213e;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 18px;
+            border: 1px solid #2a2a4a;
+        }
+        .section h2 {
+            font-size: 15px; margin-bottom: 14px; color: #D48A72;
+            display: flex; align-items: center; gap: 6px;
+        }
+        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 4px; }
+        input, textarea, select {
+            width: 100%; padding: 10px 12px; background: #0f0f23;
+            border: 1px solid #2a2a4a; border-radius: 8px;
+            color: #fff; font-size: 14px; font-family: inherit; margin-bottom: 10px;
+            -webkit-appearance: none;
+        }
+        textarea { min-height: 80px; resize: vertical; }
+        button {
+            background: #D48A72; color: #1a1a2e; border: none;
+            padding: 10px 20px; border-radius: 8px; font-weight: 600;
+            font-size: 13px; cursor: pointer; transition: all 0.2s;
+        }
+        button:active { transform: scale(0.95); }
+        button.red { background: #e74c3c; color: #fff; }
+        button.small { padding: 6px 12px; font-size: 11px; }
+
+        .item-list {
+            display: flex; flex-direction: column; gap: 8px;
+            max-height: 350px; overflow-y: auto;
+        }
+        .item-card {
+            background: #0f0f23; border-radius: 10px; padding: 12px;
+            border: 1px solid #2a2a4a;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 8px;
+        }
+        .item-info { flex: 1; min-width: 150px; }
+        .item-info .item-title { font-weight: 600; font-size: 14px; }
+        .item-info .item-meta { font-size: 11px; color: #777; margin-top: 2px; }
+        .item-actions { display: flex; gap: 6px; }
+
+        .tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #16213e; border-radius: 10px; padding: 4px; }
+        .tab {
+            flex: 1; text-align: center; padding: 10px; border-radius: 8px;
+            cursor: pointer; font-size: 13px; color: #aaa; transition: all 0.2s;
+        }
+        .tab.active { background: #D48A72; color: #1a1a2e; font-weight: 600; }
+
+        .password-screen {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 100dvh; gap: 16px;
+        }
+        .password-screen input {
+            width: 240px; text-align: center; font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loginScreen" class="password-screen">
+        <h1 style="color:#D48A72;">Eva Admin</h1>
+        <input type="password" id="passInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
+        <button onclick="login()">Entrar</button>
+    </div>
+
+    <div id="adminPanel" style="display:none;">
+        <h1>Eva Admin</h1>
+        <p class="subtitle">Gestiona el contenido de tu IA</p>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('responses')">Respuestas</div>
+            <div class="tab" onclick="switchTab('knowledge')">Conocimiento</div>
+            <div class="tab" onclick="switchTab('models')">Modelos</div>
+        </div>
+
+        <!-- Agregar contenido -->
+        <div class="section">
+            <h2>Agregar nuevo</h2>
+            <div id="formFields"></div>
+            <button onclick="addItem()">Guardar</button>
+        </div>
+
+        <!-- Lista de items -->
+        <div class="section">
+            <h2>Contenido existente</h2>
+            <div class="item-list" id="itemsList"></div>
+        </div>
+
+        <button class="red" onclick="logout()" style="margin-top:12px;">Cerrar sesión</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBiUKBNFkMcW2-5AMPZPxrmtqXzu4rS9ZM",
+            authDomain: "gen-lang-client-0059662230.firebaseapp.com",
+            projectId: "gen-lang-client-0059662230",
+            storageBucket: "gen-lang-client-0059662230.firebasestorage.app",
+            messagingSenderId: "146794930401",
+            appId: "1:146794930401:web:8eb012b2c3302b8381d7a0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        let currentTab = 'responses';
+        let allData = { responses: [], knowledge: [], models: [] };
+
+        // Login simple
+        const ADMIN_PASS = 'eva2024';
+        window.login = function() {
+            const pass = document.getElementById('passInput').value;
+            if (pass === ADMIN_PASS) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadAll();
+            } else {
+                alert('Contraseña incorrecta');
+            }
+        };
+
+        window.logout = function() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('passInput').value = '';
+        };
+
+        window.switchTab = function(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab:${tab === 'responses' ? 'first' : tab === 'knowledge' ? 'nth' : 'last'}-child`).classList.add('active');
+            document.querySelectorAll('.tab').forEach(t => {
+                if (t.textContent.toLowerCase().includes(tab === 'responses' ? 'respuestas' : tab === 'knowledge' ? 'conocimiento' : 'modelos')) {
+                    t.classList.add('active');
+                }
+            });
+            renderForm();
+            renderList();
+        };
+
+        function renderForm() {
+            const formDiv = document.getElementById('formFields');
+            if (currentTab === 'responses') {
+                formDiv.innerHTML = `
+                    <label>Categoria (saludos, despedidas, etc)</label>
+                    <input type="text" id="category" placeholder="saludos">
+                    <label>Modelo (eva, selene, nyx, aria)</label>
+                    <select id="modelSelect">
+                        <option value="eva">Eva</option>
+                        <option value="selene">Selene</option>
+                        <option value="nyx">Nyx</option>
+                        <option value="aria">Aria</option>
+                    </select>
+                    <label>Respuesta</label>
+                    <textarea id="responseText" placeholder="Hola! Soy Eva..."></textarea>
+                `;
+            } else if (currentTab === 'knowledge') {
+                formDiv.innerHTML = `
+                    <label>Categoria (saludos, despedidas, etc)</label>
+                    <input type="text" id="category" placeholder="saludos">
+                    <label>Palabras clave (separadas por coma)</label>
+                    <input type="text" id="keywords" placeholder="hola, hey, buenas">
+                `;
+            } else if (currentTab === 'models') {
+                formDiv.innerHTML = `
+                    <label>ID del modelo</label>
+                    <input type="text" id="modelId" placeholder="eva">
+                    <label>Nombre</label>
+                    <input type="text" id="modelName" placeholder="Eva 1.0">
+                    <label>Estilo</label>
+                    <input type="text" id="modelStyle" placeholder="directa">
+                    <label>Saludo</label>
+                    <textarea id="modelGreeting" placeholder="Hola, soy Eva..."></textarea>
+                `;
+            }
+        }
+
+        window.addItem = async function() {
+            try {
+                if (currentTab === 'responses') {
+                    const category = document.getElementById('category').value.trim();
+                    const model = document.getElementById('modelSelect').value;
+                    const text = document.getElementById('responseText').value.trim();
+                    if (!category || !text) return alert('Llena todos los campos');
+                    await addDoc(collection(db, 'responses'), { category, model, text, createdAt: Date.now() });
+                } else if (currentTab === 'knowledge') {
+                    const category = document.getElementById('category').value.trim();
+                    const keywords = document.getElementById('keywords').value.trim();
+                    if (!category || !keywords) return alert('Llena todos los campos');
+                    await addDoc(collection(db, 'knowledge'), { 
+                        category, 
+                        keywords: keywords.split(',').map(k => k.trim().toLowerCase()),
+                        createdAt: Date.now() 
+                    });
+                } else if (currentTab === 'models') {
+                    const modelId = document.getElementById('modelId').value.trim();
+                    const name = document.getElementById('modelName').value.trim();
+                    const style = document.getElementById('modelStyle').value.trim();
+                    const greeting = document.getElementById('modelGreeting').value.trim();
+                    if (!modelId || !name) return alert('Llena todos los campos');
+                    await addDoc(collection(db, 'models'), { modelId, name, style, greeting, createdAt: Date.now() });
+                }
+                await loadAll();
+                renderForm();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+
+        async function loadAll() {
+            try {
+                const respSnap = await getDocs(query(collection(db, 'responses'), orderBy('createdAt', 'desc')));
+                allData.responses = respSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                const knowSnap = await getDocs(query(collection(db, 'knowledge'), orderBy('createdAt', 'desc')));
+                allData.knowledge = knowSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                const modelSnap = await getDocs(query(collection(db, 'models'), orderBy('createdAt', 'desc')));
+                allData.models = modelSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                renderList();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderList() {
+            const listDiv = document.getElementById('itemsList');
+            let items = [];
+            
+            if (currentTab === 'responses') items = allData.responses;
+            else if (currentTab === 'knowledge') items = allData.knowledge;
+            else items = allData.models;
+
+            if (items.length === 0) {
+                listDiv.innerHTML = '<p style="color:#777;text-align:center;padding:20px;">No hay contenido aun</p>';
+                return;
+            }
+
+            listDiv.innerHTML = items.map(item => `
+                <div class="item-card">
+                    <div class="item-info">
+                        <div class="item-title">
+                            ${currentTab === 'responses' ? item.text?.substring(0,50) : 
+                              currentTab === 'knowledge' ? item.keywords?.join(', ') :
+                              item.name}
+                        </div>
+                        <div class="item-meta">
+                            ${currentTab === 'responses' ? item.category + ' - ' + item.model : 
+                              currentTab === 'knowledge' ? 'Categoria: ' + item.category :
+                              'ID: ' + item.modelId}
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="small red" onclick="deleteItem('${currentTab}', '${item.id}')">Eliminar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.deleteItem = async function(collectionName, id) {
+            if (!confirm('Seguro que quieres eliminar esto?')) return;
+            await deleteDoc(doc(db, collectionName, id));
+            await loadAll();
+        };
+
+        // Init
+        renderForm();
+    </script>
+</body>
+</html>
