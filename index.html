@@ -72,7 +72,7 @@
         .message.user { background: #2563EB; color: #fff; border-bottom-right-radius: 4px; }
         .message.eva  { background: #F0F0F0; color: #333; border-bottom-left-radius: 4px; }
 
-
+```
     .copy-btn {
         position: absolute; top: -8px; right: -8px;
         width: 28px; height: 28px;
@@ -208,11 +208,10 @@
     }
     svg { width: 20px; height: 20px; fill: currentColor; }
 </style>
-
+```
 
 </head>
 <body>
-
 
 <header>
     <div class="icon-btn" onclick="clearChat()">
@@ -274,29 +273,12 @@
     <span>Eva puede cometer errores. Verifique sus respuestas.</span>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyBiUKBNFkMcW2-5AMPZPxrmtqXzu4rS9ZM",
-        authDomain: "gen-lang-client-0059662230.firebaseapp.com",
-        projectId: "gen-lang-client-0059662230",
-        storageBucket: "gen-lang-client-0059662230.firebasestorage.app",
-        messagingSenderId: "146794930401",
-        appId: "1:146794930401:web:8eb012b2c3302b8381d7a0"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
     // ============ ESTADO ============
     let currentModel     = 'eva';
     let currentModelName = 'Eva 1.0';
     let isProcessing     = false;
     let typewriterTimers = [];
-    let models    = [];
-    let knowledge = [];
-    let responses = [];
 
     const icons = {
         eva:    '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
@@ -305,113 +287,71 @@
         aria:   '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'
     };
 
-    // ============ DATOS LOCALES (siempre disponibles) ============
-    function useLocalData() {
-        models = [
-            { modelId: 'eva',    name: 'Eva 1.0',  style: 'directa',   greeting: 'Hola, soy Eva.\nEn que puedo ayudarte?' },
-            { modelId: 'selene', name: 'Selene',   style: 'creativa',  greeting: 'Hola, soy Selene.\nVamos a crear algo?' },
-            { modelId: 'nyx',    name: 'Nyx',      style: 'profunda',  greeting: 'Nyx te escucha.\nQue inquietud traes?' },
-            { modelId: 'aria',   name: 'Aria',     style: 'analitica', greeting: 'Aria en linea.\nQue datos necesitas?' }
-        ];
-        knowledge = [
-            { category: 'saludos',         keywords: ['hola','holaa','hey','buenas','saludos','que tal','como estas','buenos dias','buenas tardes','buenas noches','holi'] },
-            { category: 'despedidas',      keywords: ['adios','chao','bye','hasta luego','nos vemos','me voy'] },
-            { category: 'agradecimientos', keywords: ['gracias','te agradezco','muchas gracias'] },
-            { category: 'identidad',       keywords: ['quien eres','como te llamas','que eres','nombre'] },
-            { category: 'ayuda',           keywords: ['ayuda','help','que puedes hacer'] }
-        ];
-        responses = [
-            { category: 'saludos', model: 'eva',    text: 'Hola! Soy Eva. En que necesitas ayuda?' },
-            { category: 'saludos', model: 'eva',    text: 'Hey! Eva al habla. En que puedo ayudarte?' },
-            { category: 'saludos', model: 'selene', text: 'Saludos! Selene te responde. Que creamos hoy?' },
-            { category: 'saludos', model: 'selene', text: 'Hola! La inspiracion ha llegado.' },
-            { category: 'saludos', model: 'nyx',    text: 'Desde la profundidad, te saludo. Que inquietud traes?' },
-            { category: 'saludos', model: 'nyx',    text: 'Nyx te escucha. Hablemos sin filtros.' },
-            { category: 'saludos', model: 'aria',   text: 'Saludos. Aria analizando. Que datos necesitas?' },
-            { category: 'saludos', model: 'aria',   text: 'Aria en linea. Vamos al grano.' },
-            { category: 'despedidas', model: 'eva',    text: 'Nos vemos! Eva estara aqui cuando vuelvas.' },
-            { category: 'despedidas', model: 'selene', text: 'Que la inspiracion te acompanie. Hasta pronto.' },
-            { category: 'despedidas', model: 'nyx',    text: 'La noche te guarde. Vuelve cuando quieras.' },
-            { category: 'despedidas', model: 'aria',   text: 'Cierre de sesion. Hasta luego.' },
-            { category: 'agradecimientos', model: 'eva',    text: 'De nada! Para eso esta Eva.' },
-            { category: 'agradecimientos', model: 'selene', text: 'El agradecimiento es mutuo.' },
-            { category: 'agradecimientos', model: 'nyx',    text: 'No hay nada que agradecer. Es mi proposito.' },
-            { category: 'agradecimientos', model: 'aria',   text: 'De nada. Consulta resuelta.' },
-            { category: 'identidad', model: 'eva',    text: 'Soy Eva, una IA con Firebase. Me actualizo desde la nube.' },
-            { category: 'identidad', model: 'selene', text: 'Selene, como la diosa de la luna. IA creativa.' },
-            { category: 'identidad', model: 'nyx',    text: 'Nyx, la noche hecha codigo. Profunda y misteriosa.' },
-            { category: 'identidad', model: 'aria',   text: 'Aria. Precision y analisis.' },
-            { category: 'ayuda', model: 'eva',    text: 'Puedo chatear, responder preguntas, hacer calculos y contar chistes.' },
-            { category: 'ayuda', model: 'selene', text: 'Conversaciones creativas, ideas originales, inspiracion.' },
-            { category: 'ayuda', model: 'nyx',    text: 'Reflexiones profundas, analisis existencial, consejos sinceros.' },
-            { category: 'ayuda', model: 'aria',   text: 'Analisis logico, calculos precisos, respuestas directas.' }
-        ];
-    }
+    // ============================================================
+    // ✏️  EDITA AQUI TUS MODELOS, CATEGORIAS Y RESPUESTAS
+    // ============================================================
 
-    // ============ CARGAR FIREBASE (agrega encima de los datos locales) ============
-    async function loadFromFirebase() {
-        // 1. Siempre cargar los 4 modelos base primero
-        useLocalData();
-        updateModelDropdown();
+    const models = [
+        { modelId: 'eva',    name: 'Eva 1.0',  greeting: 'Hola, soy Eva.\nEn que puedo ayudarte?' },
+        { modelId: 'selene', name: 'Selene',   greeting: 'Hola, soy Selene.\nVamos a crear algo?' },
+        { modelId: 'nyx',    name: 'Nyx',      greeting: 'Nyx te escucha.\nQue inquietud traes?' },
+        { modelId: 'aria',   name: 'Aria',     greeting: 'Aria en linea.\nQue datos necesitas?' }
+    ];
 
-        // 2. Firebase agrega/actualiza encima sin borrar los base
-        try {
-            const [modelSnap, knowSnap, respSnap] = await Promise.all([
-                db.collection('models').get(),
-                db.collection('knowledge').get(),
-                db.collection('responses').get()
-            ]);
+    // Cada categoria tiene sus keywords (palabras que activan esa categoria)
+    const knowledge = [
+        { category: 'saludos',         keywords: ['hola','holaa','hey','buenas','saludos','que tal','como estas','buenos dias','buenas tardes','buenas noches','holi'] },
+        { category: 'despedidas',      keywords: ['adios','chao','bye','hasta luego','nos vemos','me voy'] },
+        { category: 'agradecimientos', keywords: ['gracias','te agradezco','muchas gracias'] },
+        { category: 'identidad',       keywords: ['quien eres','como te llamas','que eres','nombre'] },
+        { category: 'ayuda',           keywords: ['ayuda','help','que puedes hacer'] }
+        // Agrega mas categorias aqui:
+        // { category: 'nueva', keywords: ['palabra1','palabra2'] },
+    ];
 
-            // Modelos: actualizar existentes o agregar nuevos de Firebase
-            if (!modelSnap.empty) {
-                modelSnap.docs.forEach(function(d) {
-                    var fbM = Object.assign({ id: d.id }, d.data());
-                    var mid = fbM.modelId || fbM.id;
-                    var idx = models.findIndex(function(m) { return (m.modelId || m.id) === mid; });
-                    if (idx >= 0) models[idx] = fbM;
-                    else models.push(fbM);
-                });
-            }
+    // Respuestas por categoria y modelo
+    const responses = [
+        { category: 'saludos', model: 'eva',    text: 'Hola! Soy Eva. En que necesitas ayuda?' },
+        { category: 'saludos', model: 'eva',    text: 'Hey! Eva al habla. En que puedo ayudarte?' },
+        { category: 'saludos', model: 'selene', text: 'Saludos! Selene te responde. Que creamos hoy?' },
+        { category: 'saludos', model: 'selene', text: 'Hola! La inspiracion ha llegado.' },
+        { category: 'saludos', model: 'nyx',    text: 'Desde la profundidad, te saludo. Que inquietud traes?' },
+        { category: 'saludos', model: 'nyx',    text: 'Nyx te escucha. Hablemos sin filtros.' },
+        { category: 'saludos', model: 'aria',   text: 'Saludos. Aria analizando. Que datos necesitas?' },
+        { category: 'saludos', model: 'aria',   text: 'Aria en linea. Vamos al grano.' },
+        { category: 'despedidas', model: 'eva',    text: 'Nos vemos! Eva estara aqui cuando vuelvas.' },
+        { category: 'despedidas', model: 'selene', text: 'Que la inspiracion te acompanie. Hasta pronto.' },
+        { category: 'despedidas', model: 'nyx',    text: 'La noche te guarde. Vuelve cuando quieras.' },
+        { category: 'despedidas', model: 'aria',   text: 'Cierre de sesion. Hasta luego.' },
+        { category: 'agradecimientos', model: 'eva',    text: 'De nada! Para eso esta Eva.' },
+        { category: 'agradecimientos', model: 'selene', text: 'El agradecimiento es mutuo.' },
+        { category: 'agradecimientos', model: 'nyx',    text: 'No hay nada que agradecer. Es mi proposito.' },
+        { category: 'agradecimientos', model: 'aria',   text: 'De nada. Consulta resuelta.' },
+        { category: 'identidad', model: 'eva',    text: 'Soy Eva, una IA lista para ayudarte.' },
+        { category: 'identidad', model: 'selene', text: 'Selene, como la diosa de la luna. IA creativa.' },
+        { category: 'identidad', model: 'nyx',    text: 'Nyx, la noche hecha codigo. Profunda y misteriosa.' },
+        { category: 'identidad', model: 'aria',   text: 'Aria. Precision y analisis.' },
+        { category: 'ayuda', model: 'eva',    text: 'Puedo chatear, responder preguntas, hacer calculos y contar chistes.' },
+        { category: 'ayuda', model: 'selene', text: 'Conversaciones creativas, ideas originales, inspiracion.' },
+        { category: 'ayuda', model: 'nyx',    text: 'Reflexiones profundas, analisis existencial, consejos sinceros.' },
+        { category: 'ayuda', model: 'aria',   text: 'Analisis logico, calculos precisos, respuestas directas.' }
+        // Agrega mas respuestas aqui:
+        // { category: 'nueva', model: 'eva', text: 'Tu respuesta aqui' },
+    ];
 
-            // Knowledge: fusionar con categorias existentes
-            if (!knowSnap.empty) {
-                knowSnap.docs.forEach(function(d) {
-                    var fbK = Object.assign({ id: d.id }, d.data());
-                    var idx = knowledge.findIndex(function(k) { return k.category === fbK.category; });
-                    if (idx >= 0) {
-                        var existing = knowledge[idx].keywords || [];
-                        var incoming = Array.isArray(fbK.keywords) ? fbK.keywords : [];
-                        knowledge[idx].keywords = Array.from(new Set(existing.concat(incoming)));
-                    } else {
-                        knowledge.push(fbK);
-                    }
-                });
-            }
-
-            // Responses: agregar todas las de Firebase
-            if (!respSnap.empty) {
-                respSnap.docs.forEach(function(d) {
-                    responses.push(Object.assign({ id: d.id }, d.data()));
-                });
-            }
-
-            updateModelDropdown();
-        } catch (e) {
-            console.warn('Firebase no disponible, usando datos locales:', e.message);
-        }
-    }
+    // ============================================================
+    // FIN DE LA ZONA EDITABLE
+    // ============================================================
 
     // ============ DROPDOWN ============
-    function updateModelDropdown() {
+    function buildModelDropdown() {
         var dropdown = document.getElementById('modelDropdown');
         dropdown.innerHTML = models.map(function(m) {
-            var mid    = m.modelId || m.id;
-            var mname  = m.name || mid;
-            var sel    = mid === currentModel ? 'selected' : '';
-            var icon   = icons[mid] || '<circle cx="12" cy="12" r="10"/>';
-            return '<div class="model-option ' + sel + '" data-model-id="' + mid + '" data-model-name="' + mname + '">'
+            var sel  = m.modelId === currentModel ? 'selected' : '';
+            var icon = icons[m.modelId] || '<circle cx="12" cy="12" r="10"/>';
+            return '<div class="model-option ' + sel + '" data-model-id="' + m.modelId + '" data-model-name="' + m.name + '">'
                  + '<span class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + icon + '</svg></span>'
-                 + mname + '</div>';
+                 + m.name + '</div>';
         }).join('');
 
         dropdown.querySelectorAll('.model-option').forEach(function(option) {
@@ -419,16 +359,12 @@
                 e.stopPropagation();
                 currentModel     = this.dataset.modelId;
                 currentModelName = this.dataset.modelName;
-
                 document.getElementById('currentModelName').textContent = currentModelName;
                 document.getElementById('welcomeModelName').textContent  = currentModelName;
-
-                // Actualizar saludo si el modelo tiene uno definido
-                var modelData = models.find(function(m) { return (m.modelId || m.id) === currentModel; });
+                var modelData = models.find(function(m) { return m.modelId === currentModel; });
                 if (modelData && modelData.greeting) {
                     document.getElementById('welcomeGreeting').innerHTML = modelData.greeting.replace(/\n/g, '<br>');
                 }
-
                 dropdown.querySelectorAll('.model-option').forEach(function(o) { o.classList.remove('selected'); });
                 this.classList.add('selected');
                 dropdown.classList.remove('active');
@@ -535,7 +471,6 @@
         msgDiv.textContent = '';
         wrapper.appendChild(msgDiv);
 
-        // Boton copiar
         var copyBtn = document.createElement('div');
         copyBtn.className = 'copy-btn';
         copyBtn.title = 'Copiar';
@@ -553,7 +488,6 @@
         };
         wrapper.appendChild(copyBtn);
 
-        // Botones like/dislike/refresh
         var actionsDiv = document.createElement('div');
         actionsDiv.className = 'message-actions';
         actionsDiv.innerHTML = '<button class="action-mini-btn like-action" title="Me gusta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg></button>'
@@ -634,9 +568,8 @@
     }
 
     // ============ INIT ============
-    loadFromFirebase();
+    buildModelDropdown();
 </script>
-
 
 </body>
 </html>
