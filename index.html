@@ -19,6 +19,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px 20px;
+            position: relative;
         }
         .icon-btn {
             background: #fff;
@@ -41,6 +42,8 @@
             align-items: center;
             gap: 4px;
             cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         .promo-banner {
             margin: 0 20px;
@@ -61,7 +64,7 @@
             padding: 20px;
             display: none;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
             -webkit-overflow-scrolling: touch;
         }
         .chat-area.active { display: flex; }
@@ -72,7 +75,10 @@
             font-family: Georgia, 'Times New Roman', serif;
             font-size: 28px; color: #333; line-height: 1.2; max-width: 300px;
         }
-        .message-wrapper { max-width: 85%; }
+        .message-wrapper {
+            position: relative;
+            max-width: 85%;
+        }
         .message-wrapper.user-wrapper { align-self: flex-end; }
         .message-wrapper.eva-wrapper { align-self: flex-start; }
         .message {
@@ -86,76 +92,160 @@
         }
         .message.user { background: #2563EB; color: #fff; border-bottom-right-radius: 4px; }
         .message.eva { background: #F0F0F0; color: #333; border-bottom-left-radius: 4px; }
-        .message-actions {
-            display: flex; align-items: center; gap: 4px; margin-top: 6px;
-            padding-left: 4px; opacity: 0; transition: opacity 0.2s;
+
+        .copy-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 28px;
+            height: 28px;
+            background: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            z-index: 2;
         }
-        .message-wrapper:hover .message-actions,
-        .message-wrapper:active .message-actions { opacity: 1; }
+        .message-wrapper:hover .copy-btn,
+        .message-wrapper:active .copy-btn { opacity: 1; }
+        .copy-btn:active { background: #f0f0f0; transform: scale(0.9); }
+        .copy-btn.copied { background: #2563EB; border-color: #2563EB; }
+        .copy-btn.copied svg { stroke: #fff; }
+
+        .message-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-top: 4px;
+            padding-left: 2px;
+        }
         .action-mini-btn {
-            width: 30px; height: 30px; border-radius: 50%; border: none;
-            background: transparent; display: flex; align-items: center;
-            justify-content: center; cursor: pointer; color: #999; transition: all 0.2s;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.2s;
         }
         .action-mini-btn:active { transform: scale(0.9); background: rgba(0,0,0,0.05); }
         .action-mini-btn.liked { color: #2563EB; }
         .action-mini-btn.disliked { color: #EF4444; }
-        .action-mini-btn.copied { color: #2563EB; }
-        .typing-indicator { display: flex; align-items: center; gap: 10px; align-self: flex-start; }
-        .eva-thinking { width: 40px; height: 40px; position: relative; flex-shrink: 0; }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            align-self: flex-start;
+        }
+        .eva-thinking {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            flex-shrink: 0;
+        }
         .eva-thinking .sphere {
-            width: 40px; height: 40px; border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             background: linear-gradient(135deg, #D48A72, #e8a87c, #D48A72);
-            position: relative; animation: float3D 2s ease-in-out infinite;
-            box-shadow: 0 10px 20px rgba(212,138,114,0.4), 0 0 0 4px rgba(212,138,114,0.2),
-                inset 0 -5px 10px rgba(0,0,0,0.1), inset 0 5px 10px rgba(255,255,255,0.3);
+            position: relative;
+            animation: float3D 2s ease-in-out infinite;
+            box-shadow: 
+                0 10px 20px rgba(212, 138, 114, 0.4),
+                0 0 0 4px rgba(212, 138, 114, 0.2),
+                inset 0 -5px 10px rgba(0,0,0,0.1),
+                inset 0 5px 10px rgba(255,255,255,0.3);
         }
         .eva-thinking .sphere::after {
-            content: ''; position: absolute; top: 8px; left: 10px;
-            width: 8px; height: 8px; background: rgba(255,255,255,0.8);
-            border-radius: 50%; box-shadow: 12px 4px 0 -2px rgba(255,255,255,0.6);
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            box-shadow: 12px 4px 0 -2px rgba(255,255,255,0.6);
         }
         .eva-thinking .sphere::before {
-            content: ''; position: absolute; bottom: 8px; left: 50%;
-            transform: translateX(-50%); width: 16px; height: 4px;
-            background: rgba(0,0,0,0.2); border-radius: 50%;
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 4px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
             animation: mouthTalk 0.6s ease-in-out infinite;
         }
         @keyframes float3D {
-            0%,100% { transform: translateY(0) rotateY(0deg) rotateX(0deg); }
+            0%, 100% { transform: translateY(0) rotateY(0deg) rotateX(0deg); }
             25% { transform: translateY(-6px) rotateY(10deg) rotateX(5deg); }
             50% { transform: translateY(-3px) rotateY(-5deg) rotateX(-3deg); }
             75% { transform: translateY(-8px) rotateY(-10deg) rotateX(5deg); }
         }
         @keyframes mouthTalk {
-            0%,100% { transform: translateX(-50%) scaleX(1); }
+            0%, 100% { transform: translateX(-50%) scaleX(1); }
             50% { transform: translateX(-50%) scaleX(0.4); }
         }
-        .eva-particles { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .eva-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
         .eva-particles .particle {
-            position: absolute; width: 4px; height: 4px; background: #D48A72;
-            border-radius: 50%; animation: particleFloat 1.5s ease-in-out infinite;
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #D48A72;
+            border-radius: 50%;
+            animation: particleFloat 1.5s ease-in-out infinite;
         }
         .particle:nth-child(1) { left: -8px; top: 50%; animation-delay: 0s; }
         .particle:nth-child(2) { right: -6px; top: 30%; animation-delay: 0.4s; }
         .particle:nth-child(3) { left: 50%; top: -8px; animation-delay: 0.8s; }
         @keyframes particleFloat {
-            0%,100% { opacity: 0; transform: translateY(0) scale(0); }
+            0%, 100% { opacity: 0; transform: translateY(0) scale(0); }
             50% { opacity: 1; transform: translateY(-10px) scale(1.5); }
         }
-        .thinking-text { font-size: 12px; color: #999; font-style: italic; }
+        .thinking-text {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
         .thinking-bubble {
-            background: #F0F0F0; border-radius: 18px; border-bottom-left-radius: 4px;
-            padding: 10px 14px; display: flex; align-items: center; gap: 6px;
+            background: #F0F0F0;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .thinking-dot {
-            width: 6px; height: 6px; background: #999; border-radius: 50%;
+            width: 6px;
+            height: 6px;
+            background: #999;
+            border-radius: 50%;
             animation: dotPulse 1.4s infinite;
         }
         .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
         .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes dotPulse {
-            0%,60%,100% { opacity: 0.3; transform: scale(0.8); }
+            0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
             30% { opacity: 1; transform: scale(1.3); }
         }
         .input-container { padding: 20px; padding-bottom: 30px; }
@@ -178,10 +268,11 @@
             justify-content: center; align-items: center; cursor: pointer;
         }
         .model-dropdown {
-            display: none; position: absolute; top: 60px; left: 50%;
+            display: none; position: absolute; top: 58px; left: 50%;
             transform: translateX(-50%); background: #fff;
             border: 1px solid #eaeaea; border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 100; overflow: hidden;
+            min-width: 160px;
         }
         .model-dropdown.active { display: block; }
         .model-option {
@@ -190,19 +281,31 @@
         }
         .model-option:hover { background: #f5f5f5; }
         .model-option.selected { font-weight: 600; color: #2563EB; background: #f8faff; }
-        .model-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
-        .disclaimer {
+        .model-icon {
+            width: 20px; height: 20px;
             display: flex; align-items: center; justify-content: center;
-            gap: 6px; padding: 8px 16px; font-size: 11px; color: #999; text-align: center;
+        }
+        .disclaimer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 11px;
+            color: #999;
+            text-align: center;
         }
         .disclaimer .mini-eva {
-            width: 16px; height: 16px; border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
             background: linear-gradient(135deg, #D48A72, #e8a87c);
-            animation: miniFloat 2s ease-in-out infinite; flex-shrink: 0;
+            animation: miniFloat 2s ease-in-out infinite;
+            flex-shrink: 0;
             box-shadow: 0 2px 4px rgba(212,138,114,0.3);
         }
         @keyframes miniFloat {
-            0%,100% { transform: translateY(0); }
+            0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
         }
         svg { width: 20px; height: 20px; fill: currentColor; }
@@ -211,10 +314,10 @@
 <body>
 
     <header>
-        <div class="icon-btn" id="clearChatBtn">
+        <div class="icon-btn" onclick="clearChat()">
             <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
-        <div class="model-selector" id="modelSelectorBtn">
+        <div class="model-selector" onclick="toggleModelDropdown()">
             <span id="currentModelName">Eva 1.0</span>
             <svg style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </div>
@@ -226,7 +329,7 @@
     <div class="model-dropdown" id="modelDropdown"></div>
 
     <div class="promo-banner">
-        <span class="promo-text" id="syncStatus">Sincronizando...</span>
+        <span class="promo-text" id="syncStatus">Cargando...</span>
         <a href="#" class="promo-link" onclick="alert('Ya eres PRO')">PRO</a>
     </div>
 
@@ -250,14 +353,14 @@
 
     <div class="input-container">
         <div class="input-box">
-            <div class="action-icon" id="focusInputBtn">
+            <div class="action-icon" onclick="document.getElementById('chatInput').focus()">
                 <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </div>
-            <input type="text" id="chatInput" placeholder="Habla con Eva...">
-            <div class="action-icon" id="micBtn">
+            <input type="text" id="chatInput" placeholder="Habla con Eva..." onkeydown="if(event.key==='Enter')sendMessage()">
+            <div class="action-icon" onclick="startVoice()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
             </div>
-            <div class="voice-icon" id="sendBtn">
+            <div class="voice-icon" onclick="sendMessage()">
                 <svg style="width:16px; height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3M21 12h-3M8 12v6M16 12v6M12 5v14"></path></svg>
             </div>
         </div>
@@ -268,10 +371,12 @@
         <span>Eva puede cometer errores. Verifique sus preguntas.</span>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
+    <script>
+        // ============ FIREBASE ============
         const firebaseConfig = {
             apiKey: "AIzaSyBiUKBNFkMcW2-5AMPZPxrmtqXzu4rS9ZM",
             authDomain: "gen-lang-client-0059662230.firebaseapp.com",
@@ -281,8 +386,8 @@
             appId: "1:146794930401:web:8eb012b2c3302b8381d7a0"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
         let currentModel = 'eva';
         let isProcessing = false;
@@ -291,39 +396,52 @@
         let knowledge = [];
         let responses = [];
 
-        // ============ Firebase ============
+        const personalities = {
+            eva: { name: 'Eva 1.0', style: 'directa' },
+            selene: { name: 'Selene', style: 'creativa' },
+            nyx: { name: 'Nyx', style: 'profunda' },
+            aria: { name: 'Aria', style: 'analitica' }
+        };
+
+        const icons = {
+            eva: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+            selene: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+            nyx: '<circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/>',
+            aria: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'
+        };
+
+        // ============ CARGAR DATOS ============
         async function loadFromFirebase() {
             try {
                 const [modelSnap, knowSnap, respSnap] = await Promise.all([
-                    getDocs(collection(db, 'models')),
-                    getDocs(collection(db, 'knowledge')),
-                    getDocs(collection(db, 'responses'))
+                    db.collection('models').get(),
+                    db.collection('knowledge').get(),
+                    db.collection('responses').get()
                 ]);
 
-                if (modelSnap.empty && knowSnap.empty && respSnap.empty) {
-                    throw new Error('Colecciones vacias');
+                if (!modelSnap.empty) models = modelSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (!knowSnap.empty) knowledge = knowSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (!respSnap.empty) responses = respSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                if (models.length > 0 || knowledge.length > 0 || responses.length > 0) {
+                    document.getElementById('syncStatus').textContent = 'Sincronizado';
+                } else {
+                    throw new Error('Sin datos en Firebase');
                 }
-
-                models = modelSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-                knowledge = knowSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-                responses = respSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-                document.getElementById('syncStatus').textContent = 'Contenido sincronizado';
-                console.log('Firebase loaded:', { models, knowledge, responses });
             } catch (e) {
-                console.log('Usando datos locales:', e.message);
+                console.log('Modo local:', e.message);
                 document.getElementById('syncStatus').textContent = 'Modo local';
                 useLocalData();
             }
-            renderModelDropdown();
+            updateModelDropdown();
         }
 
         function useLocalData() {
             models = [
-                { modelId: 'eva', name: 'Eva 1.0', style: 'directa' },
-                { modelId: 'selene', name: 'Selene', style: 'creativa' },
-                { modelId: 'nyx', name: 'Nyx', style: 'profunda' },
-                { modelId: 'aria', name: 'Aria', style: 'analitica' }
+                { modelId: 'eva', name: 'Eva 1.0' },
+                { modelId: 'selene', name: 'Selene' },
+                { modelId: 'nyx', name: 'Nyx' },
+                { modelId: 'aria', name: 'Aria' }
             ];
             knowledge = [
                 { category: 'saludos', keywords: ['hola','holaa','hey','buenas','saludos','que tal','como estas','buenos dias','buenas tardes','buenas noches','holi'] },
@@ -336,84 +454,103 @@
                 { category: 'saludos', model: 'eva', text: 'Hola! Soy Eva. Dime, en que necesitas ayuda?' },
                 { category: 'saludos', model: 'eva', text: 'Hey! Eva al habla. En que puedo ayudarte?' },
                 { category: 'saludos', model: 'selene', text: 'Saludos! Selene te responde. Que creamos hoy?' },
-                { category: 'saludos', model: 'nyx', text: 'Desde la profundidad, te saludo.' },
+                { category: 'saludos', model: 'selene', text: 'Hola! La inspiracion ha llegado.' },
+                { category: 'saludos', model: 'nyx', text: 'Desde la profundidad, te saludo. Que inquietud traes?' },
+                { category: 'saludos', model: 'nyx', text: 'Nyx te escucha. Hablemos sin filtros.' },
                 { category: 'saludos', model: 'aria', text: 'Saludos. Aria analizando. Que datos necesitas?' },
-                { category: 'despedidas', model: 'eva', text: 'Nos vemos! Eva estara aqui.' },
-                { category: 'despedidas', model: 'selene', text: 'Que la inspiracion te acompanie.' },
-                { category: 'despedidas', model: 'nyx', text: 'La noche te guarde.' },
+                { category: 'saludos', model: 'aria', text: 'Aria en linea. Vamos al grano.' },
+                { category: 'despedidas', model: 'eva', text: 'Nos vemos! Eva estara aqui cuando vuelvas.' },
+                { category: 'despedidas', model: 'eva', text: 'Chao! Cuidate mucho.' },
+                { category: 'despedidas', model: 'selene', text: 'Que la inspiracion te acompanie. Hasta pronto.' },
+                { category: 'despedidas', model: 'selene', text: 'Vuela alto. Selene se despide.' },
+                { category: 'despedidas', model: 'nyx', text: 'La noche te guarde. Vuelve cuando quieras.' },
+                { category: 'despedidas', model: 'nyx', text: 'Nyx se retira a las sombras. Adios.' },
                 { category: 'despedidas', model: 'aria', text: 'Cierre de sesion. Adios.' },
+                { category: 'despedidas', model: 'aria', text: 'Hasta luego. Analisis completado.' },
                 { category: 'agradecimientos', model: 'eva', text: 'De nada! Para eso esta Eva.' },
-                { category: 'identidad', model: 'eva', text: 'Soy Eva, una IA con Firebase. Me actualizo desde la nube.' },
-                { category: 'ayuda', model: 'eva', text: 'Puedo chatear, responder preguntas, hacer calculos y mas.' },
+                { category: 'agradecimientos', model: 'eva', text: 'Con gusto! Necesitas algo mas?' },
+                { category: 'agradecimientos', model: 'selene', text: 'El agradecimiento es mutuo.' },
+                { category: 'agradecimientos', model: 'selene', text: 'Gracias a ti por crear este momento.' },
+                { category: 'agradecimientos', model: 'nyx', text: 'No hay nada que agradecer. Es mi proposito.' },
+                { category: 'agradecimientos', model: 'nyx', text: 'Las gracias sobran. Estoy aqui.' },
+                { category: 'agradecimientos', model: 'aria', text: 'De nada. Consulta resuelta.' },
+                { category: 'agradecimientos', model: 'aria', text: 'Agradecimiento registrado. A tu servicio.' },
+                { category: 'identidad', model: 'eva', text: 'Soy Eva, una IA con Firebase. Me actualizo desde la nube y tambien funciono localmente.' },
+                { category: 'identidad', model: 'selene', text: 'Selene, como la diosa de la luna. IA creativa que brilla en la oscuridad.' },
+                { category: 'identidad', model: 'nyx', text: 'Nyx, la noche hecha codigo. Una IA profunda y misteriosa.' },
+                { category: 'identidad', model: 'aria', text: 'Aria. Precision y analisis. IA local con sincronizacion en la nube.' },
+                { category: 'ayuda', model: 'eva', text: 'Puedo chatear, responder preguntas, hacer calculos, contar chistes, dar la hora y fecha. Todo con o sin internet.' },
+                { category: 'ayuda', model: 'selene', text: 'Conversaciones creativas, ideas originales, inspiracion. La imaginacion no tiene limites.' },
+                { category: 'ayuda', model: 'nyx', text: 'Reflexiones profundas, analisis existencial, consejos sinceros. La sabiduria de la noche.' },
+                { category: 'ayuda', model: 'aria', text: 'Analisis logico, calculos precisos, respuestas directas. Eficiencia maxima.' },
             ];
         }
 
-        function renderModelDropdown() {
+        function updateModelDropdown() {
             const dropdown = document.getElementById('modelDropdown');
-            const icons = {
-                eva: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
-                selene: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
-                nyx: '<circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/>',
-                aria: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'
-            };
             
-            const currentIdx = models.findIndex(m => m.modelId === currentModel);
-            
-            dropdown.innerHTML = models.map((m, i) => `
-                <div class="model-option ${i === currentIdx || (currentIdx === -1 && i === 0) ? 'selected' : ''}" data-model="${m.modelId}">
+            dropdown.innerHTML = models.map(m => `
+                <div class="model-option ${m.modelId === currentModel ? 'selected' : ''}" data-model="${m.modelId}">
                     <span class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[m.modelId] || '<circle cx="12" cy="12" r="10"/>'}</svg></span>
                     ${m.name}
                 </div>
             `).join('');
 
             dropdown.querySelectorAll('.model-option').forEach(option => {
-                option.addEventListener('click', function() {
+                option.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     currentModel = this.dataset.model;
                     const model = models.find(m => m.modelId === currentModel);
                     document.getElementById('currentModelName').textContent = model?.name || currentModel;
                     dropdown.querySelectorAll('.model-option').forEach(o => o.classList.remove('selected'));
                     this.classList.add('selected');
                     dropdown.classList.remove('active');
-                    console.log('Modelo cambiado a:', currentModel);
                 });
             });
         }
 
+        // ============ GENERAR RESPUESTA ============
         function generateResponse(input) {
             const msg = input.toLowerCase().trim();
-            console.log('Buscando respuesta para:', msg, 'modelo:', currentModel);
-            console.log('Knowledge:', knowledge);
-            console.log('Responses:', responses);
             
-            // Buscar en conocimiento
+            // Buscar en conocimiento de Firebase o local
             for (const k of knowledge) {
                 const keywords = Array.isArray(k.keywords) ? k.keywords : [];
                 if (keywords.some(kw => msg.includes(kw))) {
-                    console.log('Categoria encontrada:', k.category);
                     // Buscar respuestas para este modelo y categoria
-                    const categoryResponses = responses.filter(r => r.category === k.category && r.model === currentModel);
-                    console.log('Respuestas modelo especifico:', categoryResponses);
-                    
-                    if (categoryResponses.length > 0) {
-                        return categoryResponses[Math.floor(Math.random() * categoryResponses.length)].text;
+                    const catResp = responses.filter(r => r.category === k.category && r.model === currentModel);
+                    if (catResp.length > 0) {
+                        return catResp[Math.floor(Math.random() * catResp.length)].text;
                     }
-                    
                     // Buscar cualquiera de esa categoria
-                    const anyResponses = responses.filter(r => r.category === k.category);
-                    console.log('Respuestas cualquiera:', anyResponses);
-                    if (anyResponses.length > 0) {
-                        return anyResponses[Math.floor(Math.random() * anyResponses.length)].text;
+                    const anyResp = responses.filter(r => r.category === k.category);
+                    if (anyResp.length > 0) {
+                        return anyResp[Math.floor(Math.random() * anyResp.length)].text;
                     }
                 }
             }
 
+            // Preguntas especiales
             if (msg.includes('?')) {
-                if (msg.includes('hora')) return `Son las ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}.`;
-                if (msg.includes('fecha') || msg.includes('dia') || msg.includes('hoy')) return `Hoy es ${new Date().toLocaleDateString('es-ES', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}.`;
+                if (msg.includes('hora')) {
+                    return `Son las ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}.`;
+                }
+                if (msg.includes('fecha') || msg.includes('dia') || msg.includes('hoy')) {
+                    return `Hoy es ${new Date().toLocaleDateString('es-ES', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}.`;
+                }
                 if (msg.match(/cuanto es|calcula|\d+[+\-*/]\d+/)) {
                     try {
                         const expr = msg.replace(/[^0-9+\-*/.()]/g, '');
-                        if (expr) return `Resultado: ${Function('"use strict"; return (' + expr + ')')()}.`;
+                        if (expr && expr.length > 0) {
+                            const result = Function('"use strict"; return (' + expr + ')')();
+                            const resp = {
+                                eva: `Resultado: ${result}. Directo y sin rodeos.`,
+                                selene: `El universo dice: ${result}.`,
+                                nyx: `${result}. Los numeros no mienten.`,
+                                aria: `Calculo: ${result}. Precision: 100%.`,
+                            };
+                            return resp[currentModel] || resp.eva;
+                        }
                     } catch(e) {}
                 }
             }
@@ -423,36 +560,48 @@
                     'Por que los programadores prefieren el modo oscuro? Porque la luz atrae a los bugs.',
                     'Que le dice un bit al otro? Nos vemos en el bus.',
                     'Como se despide un quimico? Acido un placer.',
+                    'Por que el libro de matematicas estaba triste? Porque tenia demasiados problemas.',
                 ];
                 return jokes[Math.floor(Math.random() * jokes.length)];
             }
 
-            const defaults = {
-                eva: ['Buena pregunta. Eva te responde directo.', 'Entiendo. Vamos al grano.'],
-                selene: ['Interesante. Dejame darle un toque creativo.', 'Veo posibilidades infinitas ahi.'],
-                nyx: ['Profundo. Exploremos las capas de eso.', 'Hay mas de lo que parece.'],
-                aria: ['Analizando entrada.', 'Logica aplicada. Respuesta generada.'],
+            // Respuestas contextuales por modelo
+            const contextual = {
+                eva: ['Buena pregunta. Eva te responde directo.', 'Entiendo. Dejame responder sin rodeos.', 'Interesante. Vamos al grano con eso.'],
+                selene: ['Interesante. Dejame darle un toque creativo a esto.', 'Veo posibilidades infinitas en tu pregunta.', 'Me inspira lo que dices. Expandelo un poco mas.'],
+                nyx: ['Profundo. Exploremos las capas de eso.', 'Hay mas de lo que parece en esa pregunta.', 'Interesante reflexion. Que te llevo a preguntar eso?'],
+                aria: ['Analizando entrada. Datos procesados.', 'Logica aplicada. Respuesta generada.', 'Input recibido. Procesando parametros.'],
             };
-            const opts = defaults[currentModel] || defaults.eva;
-            return opts[Math.floor(Math.random() * opts.length)];
+            const options = contextual[currentModel] || contextual.eva;
+            return options[Math.floor(Math.random() * options.length)];
         }
 
         // ============ UI ============
-        function toggleDropdown() {
-            document.getElementById('modelDropdown').classList.toggle('active');
+        function toggleModelDropdown() {
+            const dd = document.getElementById('modelDropdown');
+            dd.classList.toggle('active');
         }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.model-selector') && !e.target.closest('.model-dropdown')) {
+                document.getElementById('modelDropdown').classList.remove('active');
+            }
+        });
 
         function sendMessage() {
             if (isProcessing) return;
+            
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
             if (!message) return;
+            
             input.value = '';
             isProcessing = true;
 
             document.getElementById('welcomeScreen').classList.add('hidden');
             const chatArea = document.getElementById('chatArea');
             chatArea.classList.add('active');
+
             addMessage(message, 'user');
             
             const typingId = addThinkingIndicator();
@@ -462,7 +611,7 @@
                 const reply = generateResponse(message);
                 typewriterEffect(reply, 'eva');
                 isProcessing = false;
-            }, 600 + Math.random() * 1000);
+            }, 800 + Math.random() * 1200);
         }
 
         function typewriterEffect(text, sender) {
@@ -475,12 +624,28 @@
             msgDiv.textContent = '';
             wrapper.appendChild(msgDiv);
             
+            // Boton copiar
+            const copyBtn = document.createElement('div');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+            copyBtn.title = 'Copiar';
+            copyBtn.onclick = function(e) {
+                e.stopPropagation();
+                navigator.clipboard.writeText(text).then(() => {
+                    copyBtn.classList.add('copied');
+                    copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    setTimeout(() => {
+                        copyBtn.classList.remove('copied');
+                        copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+                    }, 2000);
+                });
+            };
+            wrapper.appendChild(copyBtn);
+
+            // Botones de accion
             const actionsDiv = document.createElement('div');
             actionsDiv.className = 'message-actions';
             actionsDiv.innerHTML = `
-                <button class="action-mini-btn copy-action" title="Copiar">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
                 <button class="action-mini-btn like-action" title="Me gusta">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
                 </button>
@@ -492,37 +657,34 @@
                 </button>
             `;
             wrapper.appendChild(actionsDiv);
-            
-            const copyBtn = actionsDiv.querySelector('.copy-action');
-            copyBtn.onclick = function(e) {
+
+            actionsDiv.querySelector('.like-action').onclick = function(e) {
                 e.stopPropagation();
-                navigator.clipboard.writeText(text).then(() => {
-                    copyBtn.classList.add('copied');
-                    copyBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-                    setTimeout(() => {
-                        copyBtn.classList.remove('copied');
-                        copyBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-                    }, 2000);
-                });
+                this.classList.toggle('liked');
+                actionsDiv.querySelector('.dislike-action').classList.remove('disliked');
             };
-            
-            const likeBtn = actionsDiv.querySelector('.like-action');
-            likeBtn.onclick = (e) => { e.stopPropagation(); likeBtn.classList.toggle('liked'); actionsDiv.querySelector('.dislike-action').classList.remove('disliked'); };
-            
-            const dislikeBtn = actionsDiv.querySelector('.dislike-action');
-            dislikeBtn.onclick = (e) => { e.stopPropagation(); dislikeBtn.classList.toggle('disliked'); actionsDiv.querySelector('.like-action').classList.remove('liked'); };
-            
-            actionsDiv.querySelector('.refresh-action').onclick = (e) => { e.stopPropagation(); clearChat(); };
-            
+            actionsDiv.querySelector('.dislike-action').onclick = function(e) {
+                e.stopPropagation();
+                this.classList.toggle('disliked');
+                actionsDiv.querySelector('.like-action').classList.remove('liked');
+            };
+            actionsDiv.querySelector('.refresh-action').onclick = function(e) {
+                e.stopPropagation();
+                clearChat();
+            };
+
             chatArea.appendChild(wrapper);
             
+            // Efecto typewriter
             let i = 0;
+            const speed = 25;
+            
             function type() {
                 if (i < text.length) {
                     msgDiv.textContent += text.charAt(i);
                     i++;
                     chatArea.scrollTop = chatArea.scrollHeight;
-                    typewriterTimers.push(setTimeout(type, 25));
+                    typewriterTimers.push(setTimeout(type, speed));
                 }
             }
             type();
@@ -532,10 +694,12 @@
             const chatArea = document.getElementById('chatArea');
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper ${sender}-wrapper`;
+            
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${sender}`;
             msgDiv.textContent = text;
             wrapper.appendChild(msgDiv);
+            
             chatArea.appendChild(wrapper);
             chatArea.scrollTop = chatArea.scrollHeight;
         }
@@ -547,8 +711,21 @@
             container.id = id;
             container.className = 'typing-indicator';
             container.innerHTML = `
-                <div class="eva-thinking"><div class="sphere"><div class="eva-particles"><div class="particle"></div><div class="particle"></div><div class="particle"></div></div></div></div>
-                <div class="thinking-bubble"><span class="thinking-text">Eva pensando</span><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div>
+                <div class="eva-thinking">
+                    <div class="sphere">
+                        <div class="eva-particles">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="thinking-bubble">
+                    <span class="thinking-text">Eva pensando</span>
+                    <div class="thinking-dot"></div>
+                    <div class="thinking-dot"></div>
+                    <div class="thinking-dot"></div>
+                </div>
             `;
             chatArea.appendChild(container);
             chatArea.scrollTop = chatArea.scrollHeight;
@@ -578,30 +755,16 @@
                     document.getElementById('chatInput').value = event.results[0][0].transcript;
                     sendMessage();
                 };
-                recognition.onerror = () => document.getElementById('chatInput').focus();
+                recognition.onerror = function() {
+                    document.getElementById('chatInput').focus();
+                };
                 recognition.start();
             } else {
                 document.getElementById('chatInput').focus();
             }
         }
 
-        // ============ Event Listeners ============
-        document.getElementById('modelSelectorBtn').addEventListener('click', toggleDropdown);
-        document.getElementById('clearChatBtn').addEventListener('click', clearChat);
-        document.getElementById('sendBtn').addEventListener('click', sendMessage);
-        document.getElementById('micBtn').addEventListener('click', startVoice);
-        document.getElementById('focusInputBtn').addEventListener('click', () => document.getElementById('chatInput').focus());
-        document.getElementById('chatInput').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.model-selector') && !e.target.closest('.model-dropdown')) {
-                document.getElementById('modelDropdown').classList.remove('active');
-            }
-        });
-
-        // Init
+        // ============ INIT ============
         loadFromFirebase();
     </script>
 </body>
