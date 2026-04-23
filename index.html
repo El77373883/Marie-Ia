@@ -272,7 +272,8 @@
     </div>
 
     <script>
-        // ============ POLLINATIONS AI - GRATIS ILIMITADA ============
+        // ============ API GRATIS - SIN LÍMITES ============
+        // Usamos un proxy CORS gratuito + Hugging Face
         let currentModel = 'gpt-4o-mini';
         let conversationHistory = [];
         let isProcessing = false;
@@ -284,11 +285,12 @@
             'mixtral-8x7b': 'Mixtral 8x7B'
         };
 
+        // Modelos reales en Hugging Face (gratuitos)
         const modelMap = {
-            'gpt-4o-mini': 'openai',
-            'claude-3-haiku': 'claude',
-            'llama-3.1-70b': 'llama',
-            'mixtral-8x7b': 'mistral'
+            'gpt-4o-mini': 'microsoft/Phi-3-mini-4k-instruct',
+            'claude-3-haiku': 'mistralai/Mistral-7B-Instruct-v0.2',
+            'llama-3.1-70b': 'meta-llama/Meta-Llama-3-8B-Instruct',
+            'mixtral-8x7b': 'mistralai/Mixtral-8x7B-Instruct-v0.1'
         };
 
         function toggleModelDropdown() {
@@ -330,7 +332,7 @@
             const typingId = addTypingIndicator();
             
             try {
-                const response = await callPollinationsAPI(message);
+                const response = await callHuggingFaceAPI(message);
                 removeTypingIndicator(typingId);
                 if (response) {
                     addMessage(response, 'ia');
@@ -339,22 +341,72 @@
                 }
             } catch (error) {
                 removeTypingIndicator(typingId);
-                addMessage('Error de conexión. Revisa tu internet. 😕', 'ia');
+                console.error(error);
+                addMessage('Error: ' + error.message, 'ia');
             }
             
             isProcessing = false;
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        async function callPollinationsAPI(message) {
-            const systemPrompt = encodeURIComponent('Eres un asistente útil, amable y responde en español.');
-            const userMessage = encodeURIComponent(message);
+        async function callHuggingFaceAPI(message) {
+            const hfModel = modelMap[currentModel];
             
-            const url = `https://text.pollinations.ai/${userMessage}?model=${modelMap[currentModel]}&system=${systemPrompt}&seed=random`;
+            // Construir el prompt según el modelo
+            let prompt;
+            if (hfModel.includes('Phi-3')) {
+                prompt = `<|system|>Eres un asistente útil que responde en español.</s><|user|>${message}</s><|assistant|>`;
+            } else if (hfModel.includes('Llama')) {
+                prompt = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>Eres un asistente útil que responde en español.<|eot_id|><|start_header_id|>user<|end_header_id|>${message}<|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
+            } else {
+                prompt = `<s>[INST] Eres un asistente útil que responde en español. [/INST]</s>[INST] ${message} [/INST]`;
+            }
+
+            // Usar proxy CORS para evitar problemas
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const apiUrl = `https://api-inference.huggingface.co/models/${hfModel}`;
             
-            const response = await fetch(url);
-            const text = await response.text();
-            return text;
+            const response = await fetch(proxyUrl + encodeURIComponent(apiUrl), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    inputs: prompt,
+                    parameters: {
+                        max_new_tokens: 500,
+                        temperature: 0.7,
+                        top_p: 0.9,
+                        do_sample: true
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Error del servidor');
+            }
+
+            const data = await response.json();
+            
+            let text;
+            if (Array.isArray(data) && data[0]?.generated_text) {
+                text = data[0].generated_text;
+            } else if (data.generated_text) {
+                text = data.generated_text;
+            } else if (typeof data === 'string') {
+                text = data;
+            } else {
+                text = JSON.stringify(data);
+            }
+
+            // Limpiar la respuesta (quitar el prompt)
+            if (text.includes('[/INST]')) {
+                text = text.split('[/INST]').pop().trim();
+            } else if (text.includes('<|assistant|>')) {
+                text = text.split('<|assistant|>').pop().trim();
+            }
+
+            return text || 'Sin respuesta';
         }
 
         function addMessage(text, sender) {
