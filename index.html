@@ -56,7 +56,6 @@
         .promo-text { color: #555; }
         .promo-link { color: #2563EB; text-decoration: none; font-weight: 500; }
 
-        /* Chat area */
         .chat-area {
             flex-grow: 1;
             overflow-y: auto;
@@ -95,7 +94,6 @@
             max-width: 300px;
         }
 
-        /* Mensajes */
         .message {
             max-width: 85%;
             padding: 12px 16px;
@@ -184,7 +182,6 @@
             cursor: pointer;
         }
 
-        /* Selector de modelos */
         .model-dropdown {
             display: none;
             position: absolute;
@@ -233,7 +230,6 @@
         </div>
     </header>
 
-    <!-- Dropdown de modelos -->
     <div class="model-dropdown" id="modelDropdown">
         <div class="model-option selected" data-model="gpt-4o-mini">GPT-4o mini</div>
         <div class="model-option" data-model="claude-3-haiku">Claude 3 Haiku</div>
@@ -246,10 +242,8 @@
         <a href="#" class="promo-link">Actualizar</a>
     </div>
 
-    <!-- Área de chat -->
     <div class="chat-area" id="chatArea"></div>
 
-    <!-- Pantalla de bienvenida -->
     <main id="welcomeScreen">
         <div class="logo-star">
             <svg style="width:50px; height:50px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -278,23 +272,25 @@
     </div>
 
     <script>
-        // ============ CONFIGURACIÓN ============
-        // DuckDuckGo AI - Gratis y sin límites
-        const API_URL = 'https://duckduckgo.com/duckchat/v1/chat';
-        
-        let currentModel = 'gpt-4o-mini'; // Modelo por defecto
+        // ============ POLLINATIONS AI - GRATIS ILIMITADA ============
+        let currentModel = 'gpt-4o-mini';
         let conversationHistory = [];
         let isProcessing = false;
 
-        // ============ MODELOS DISPONIBLES ============
         const models = {
-            'gpt-4o-mini': 'GPT-4o mini (OpenAI)',
-            'claude-3-haiku': 'Claude 3 Haiku (Anthropic)',
-            'llama-3.1-70b': 'Llama 3.1 70B (Meta)',
-            'mixtral-8x7b': 'Mixtral 8x7B (Mistral)'
+            'gpt-4o-mini': 'GPT-4o mini',
+            'claude-3-haiku': 'Claude 3 Haiku',
+            'llama-3.1-70b': 'Llama 3.1 70B',
+            'mixtral-8x7b': 'Mixtral 8x7B'
         };
 
-        // ============ SELECTOR DE MODELOS ============
+        const modelMap = {
+            'gpt-4o-mini': 'openai',
+            'claude-3-haiku': 'claude',
+            'llama-3.1-70b': 'llama',
+            'mixtral-8x7b': 'mistral'
+        };
+
         function toggleModelDropdown() {
             document.getElementById('modelDropdown').classList.toggle('active');
         }
@@ -309,14 +305,12 @@
             });
         });
 
-        // Cerrar dropdown al hacer clic fuera
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.model-selector') && !e.target.closest('.model-dropdown')) {
                 document.getElementById('modelDropdown').classList.remove('active');
             }
         });
 
-        // ============ ENVIAR MENSAJE ============
         async function sendMessage() {
             if (isProcessing) return;
             
@@ -327,97 +321,42 @@
             input.value = '';
             isProcessing = true;
 
-            // Ocultar pantalla de bienvenida
             document.getElementById('welcomeScreen').classList.add('hidden');
             const chatArea = document.getElementById('chatArea');
             chatArea.classList.add('active');
 
-            // Mostrar mensaje del usuario
             addMessage(message, 'user');
             
-            // Mostrar indicador de escritura
             const typingId = addTypingIndicator();
             
             try {
-                const response = await callDuckDuckGoAPI(message);
+                const response = await callPollinationsAPI(message);
                 removeTypingIndicator(typingId);
-                addMessage(response, 'ia');
+                if (response) {
+                    addMessage(response, 'ia');
+                } else {
+                    addMessage('No obtuve respuesta. Intenta de nuevo.', 'ia');
+                }
             } catch (error) {
                 removeTypingIndicator(typingId);
-                addMessage('Lo siento, hubo un error. Intenta de nuevo. 😕', 'ia');
-                console.error('Error:', error);
+                addMessage('Error de conexión. Revisa tu internet. 😕', 'ia');
             }
             
             isProcessing = false;
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        // ============ LLAMADA A DUCKDUCKGO AI ============
-        async function callDuckDuckGoAPI(message) {
-            // Primero obtenemos el token VQD
-            const statusResponse = await fetch('https://duckduckgo.com/duckchat/v1/status', {
-                headers: { 'x-vqd-accept': '1' }
-            });
-            const vqd = statusResponse.headers.get('x-vqd-4');
+        async function callPollinationsAPI(message) {
+            const systemPrompt = encodeURIComponent('Eres un asistente útil, amable y responde en español.');
+            const userMessage = encodeURIComponent(message);
             
-            if (!vqd) throw new Error('No se pudo obtener el token');
-
-            // Enviar el mensaje
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-vqd-4': vqd,
-                    'Accept': 'text/event-stream'
-                },
-                body: JSON.stringify({
-                    model: currentModel,
-                    messages: [
-                        ...conversationHistory,
-                        { role: 'user', content: message }
-                    ]
-                })
-            });
-
-            // Leer la respuesta en streaming
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let fullResponse = '';
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                
-                const chunk = decoder.decode(value);
-                const lines = chunk.split('\n');
-                
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        const data = line.slice(6);
-                        if (data === '[DONE]') continue;
-                        try {
-                            const parsed = JSON.parse(data);
-                            if (parsed.message) {
-                                fullResponse += parsed.message;
-                            }
-                        } catch (e) {}
-                    }
-                }
-            }
-
-            // Actualizar historial
-            conversationHistory.push({ role: 'user', content: message });
-            conversationHistory.push({ role: 'assistant', content: fullResponse });
+            const url = `https://text.pollinations.ai/${userMessage}?model=${modelMap[currentModel]}&system=${systemPrompt}&seed=random`;
             
-            // Limitar historial
-            if (conversationHistory.length > 20) {
-                conversationHistory = conversationHistory.slice(-20);
-            }
-
-            return fullResponse || 'No obtuve respuesta. Intenta de nuevo.';
+            const response = await fetch(url);
+            const text = await response.text();
+            return text;
         }
 
-        // ============ FUNCIONES DE UI ============
         function addMessage(text, sender) {
             const chatArea = document.getElementById('chatArea');
             const msgDiv = document.createElement('div');
@@ -451,10 +390,8 @@
             document.getElementById('welcomeScreen').classList.remove('hidden');
         }
 
-        // ============ VOZ (Dictado nativo de iOS) ============
         function startVoice() {
             const input = document.getElementById('chatInput');
-            // En iOS, al hacer foco en el input, el teclado muestra el botón de dictado
             input.focus();
         }
     </script>
