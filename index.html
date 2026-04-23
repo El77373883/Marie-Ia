@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat IA</title>
     <style>
-        /* Estilos generales */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -13,10 +12,9 @@
             color: #333;
             display: flex;
             flex-direction: column;
-            height: 100dvh; /* Usa dvh para adaptarse bien en iOS */
+            height: 100dvh;
         }
 
-        /* Cabecera */
         header {
             display: flex;
             justify-content: space-between;
@@ -41,9 +39,9 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            cursor: pointer;
         }
 
-        /* Banner Promo */
         .promo-banner {
             margin: 0 20px;
             padding: 12px 16px;
@@ -58,7 +56,20 @@
         .promo-text { color: #555; }
         .promo-link { color: #2563EB; text-decoration: none; font-weight: 500; }
 
-        /* Contenido Central (Saludo) */
+        /* Chat area */
+        .chat-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .chat-area.active {
+            display: flex;
+        }
+
         main {
             flex-grow: 1;
             display: flex;
@@ -68,22 +79,70 @@
             text-align: center;
             padding: 20px;
         }
+        main.hidden {
+            display: none;
+        }
+
         .logo-star {
-            color: #D48A72; /* Color de la estrella de Claude */
+            color: #D48A72;
             margin-bottom: 24px;
         }
         .greeting {
-            font-family: Georgia, 'Times New Roman', serif; /* Fuente con serifa para el estilo elegante */
+            font-family: Georgia, 'Times New Roman', serif;
             font-size: 28px;
             color: #333;
             line-height: 1.2;
             max-width: 300px;
         }
 
-        /* Área de Input */
+        /* Mensajes */
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            font-size: 15px;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user {
+            align-self: flex-end;
+            background: #2563EB;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .message.ia {
+            align-self: flex-start;
+            background: #F0F0F0;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+        .typing-dots span {
+            width: 7px;
+            height: 7px;
+            background: #999;
+            border-radius: 50%;
+            animation: blink 1.4s infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+
         .input-container {
             padding: 20px;
-            padding-bottom: 30px; /* Espacio para el indicador de inicio del iPhone */
+            padding-bottom: 30px;
         }
         .input-box {
             background-color: #F4F4F4;
@@ -111,6 +170,7 @@
             width: 32px;
             height: 32px;
             color: #555;
+            cursor: pointer;
         }
         .voice-icon {
             background-color: #000;
@@ -121,20 +181,51 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
         }
 
-        /* Utilidades SVG */
+        /* Selector de modelos */
+        .model-dropdown {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 10;
+            overflow: hidden;
+        }
+        .model-dropdown.active {
+            display: block;
+        }
+        .model-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .model-option:hover {
+            background: #f5f5f5;
+        }
+        .model-option.selected {
+            font-weight: 600;
+            color: #2563EB;
+        }
+
         svg { width: 20px; height: 20px; fill: currentColor; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="icon-btn">
+        <div class="icon-btn" onclick="clearChat()">
             <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
-        <div class="model-selector">
-            Sonnet 4.6
+        <div class="model-selector" onclick="toggleModelDropdown()" id="modelSelectorBtn">
+            <span id="currentModelName">GPT-4o mini</span>
             <svg style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </div>
         <div class="icon-btn">
@@ -142,12 +233,24 @@
         </div>
     </header>
 
+    <!-- Dropdown de modelos -->
+    <div class="model-dropdown" id="modelDropdown">
+        <div class="model-option selected" data-model="gpt-4o-mini">GPT-4o mini</div>
+        <div class="model-option" data-model="claude-3-haiku">Claude 3 Haiku</div>
+        <div class="model-option" data-model="llama-3.1-70b">Llama 3.1 70B</div>
+        <div class="model-option" data-model="mixtral-8x7b">Mixtral 8x7B</div>
+    </div>
+
     <div class="promo-banner">
         <span class="promo-text">Get more with Claude Pro</span>
         <a href="#" class="promo-link">Actualizar</a>
     </div>
 
-    <main>
+    <!-- Área de chat -->
+    <div class="chat-area" id="chatArea"></div>
+
+    <!-- Pantalla de bienvenida -->
+    <main id="welcomeScreen">
         <div class="logo-star">
             <svg style="width:50px; height:50px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="2" x2="12" y2="22"></line>
@@ -161,18 +264,200 @@
 
     <div class="input-container">
         <div class="input-box">
-            <div class="action-icon">
+            <div class="action-icon" onclick="document.getElementById('chatInput').focus()">
                 <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </div>
-            <input type="text" placeholder="Chat con Claude">
-            <div class="action-icon">
+            <input type="text" id="chatInput" placeholder="Chat con Claude" onkeydown="if(event.key==='Enter')sendMessage()">
+            <div class="action-icon" id="micBtn" onclick="startVoice()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
             </div>
-            <div class="voice-icon">
+            <div class="voice-icon" onclick="sendMessage()">
                 <svg style="width:16px; height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3M21 12h-3M8 12v6M16 12v6M12 5v14"></path></svg>
             </div>
         </div>
     </div>
+
+    <script>
+        // ============ CONFIGURACIÓN ============
+        // DuckDuckGo AI - Gratis y sin límites
+        const API_URL = 'https://duckduckgo.com/duckchat/v1/chat';
+        
+        let currentModel = 'gpt-4o-mini'; // Modelo por defecto
+        let conversationHistory = [];
+        let isProcessing = false;
+
+        // ============ MODELOS DISPONIBLES ============
+        const models = {
+            'gpt-4o-mini': 'GPT-4o mini (OpenAI)',
+            'claude-3-haiku': 'Claude 3 Haiku (Anthropic)',
+            'llama-3.1-70b': 'Llama 3.1 70B (Meta)',
+            'mixtral-8x7b': 'Mixtral 8x7B (Mistral)'
+        };
+
+        // ============ SELECTOR DE MODELOS ============
+        function toggleModelDropdown() {
+            document.getElementById('modelDropdown').classList.toggle('active');
+        }
+
+        document.querySelectorAll('.model-option').forEach(option => {
+            option.addEventListener('click', function() {
+                currentModel = this.dataset.model;
+                document.getElementById('currentModelName').textContent = this.textContent;
+                document.querySelectorAll('.model-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('modelDropdown').classList.remove('active');
+            });
+        });
+
+        // Cerrar dropdown al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.model-selector') && !e.target.closest('.model-dropdown')) {
+                document.getElementById('modelDropdown').classList.remove('active');
+            }
+        });
+
+        // ============ ENVIAR MENSAJE ============
+        async function sendMessage() {
+            if (isProcessing) return;
+            
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            input.value = '';
+            isProcessing = true;
+
+            // Ocultar pantalla de bienvenida
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            const chatArea = document.getElementById('chatArea');
+            chatArea.classList.add('active');
+
+            // Mostrar mensaje del usuario
+            addMessage(message, 'user');
+            
+            // Mostrar indicador de escritura
+            const typingId = addTypingIndicator();
+            
+            try {
+                const response = await callDuckDuckGoAPI(message);
+                removeTypingIndicator(typingId);
+                addMessage(response, 'ia');
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                addMessage('Lo siento, hubo un error. Intenta de nuevo. 😕', 'ia');
+                console.error('Error:', error);
+            }
+            
+            isProcessing = false;
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // ============ LLAMADA A DUCKDUCKGO AI ============
+        async function callDuckDuckGoAPI(message) {
+            // Primero obtenemos el token VQD
+            const statusResponse = await fetch('https://duckduckgo.com/duckchat/v1/status', {
+                headers: { 'x-vqd-accept': '1' }
+            });
+            const vqd = statusResponse.headers.get('x-vqd-4');
+            
+            if (!vqd) throw new Error('No se pudo obtener el token');
+
+            // Enviar el mensaje
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-vqd-4': vqd,
+                    'Accept': 'text/event-stream'
+                },
+                body: JSON.stringify({
+                    model: currentModel,
+                    messages: [
+                        ...conversationHistory,
+                        { role: 'user', content: message }
+                    ]
+                })
+            });
+
+            // Leer la respuesta en streaming
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let fullResponse = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                const chunk = decoder.decode(value);
+                const lines = chunk.split('\n');
+                
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+                        if (data === '[DONE]') continue;
+                        try {
+                            const parsed = JSON.parse(data);
+                            if (parsed.message) {
+                                fullResponse += parsed.message;
+                            }
+                        } catch (e) {}
+                    }
+                }
+            }
+
+            // Actualizar historial
+            conversationHistory.push({ role: 'user', content: message });
+            conversationHistory.push({ role: 'assistant', content: fullResponse });
+            
+            // Limitar historial
+            if (conversationHistory.length > 20) {
+                conversationHistory = conversationHistory.slice(-20);
+            }
+
+            return fullResponse || 'No obtuve respuesta. Intenta de nuevo.';
+        }
+
+        // ============ FUNCIONES DE UI ============
+        function addMessage(text, sender) {
+            const chatArea = document.getElementById('chatArea');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            msgDiv.textContent = text;
+            chatArea.appendChild(msgDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const chatArea = document.getElementById('chatArea');
+            const id = 'typing-' + Date.now();
+            const typingDiv = document.createElement('div');
+            typingDiv.id = id;
+            typingDiv.className = 'message ia';
+            typingDiv.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+            chatArea.appendChild(typingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            return id;
+        }
+
+        function removeTypingIndicator(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function clearChat() {
+            conversationHistory = [];
+            document.getElementById('chatArea').innerHTML = '';
+            document.getElementById('chatArea').classList.remove('active');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        // ============ VOZ (Dictado nativo de iOS) ============
+        function startVoice() {
+            const input = document.getElementById('chatInput');
+            // En iOS, al hacer foco en el input, el teclado muestra el botón de dictado
+            input.focus();
+        }
+    </script>
 
 </body>
 </html>
