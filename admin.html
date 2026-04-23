@@ -71,26 +71,23 @@
     <p class="subtitle">Gestiona el contenido de tu IA</p>
     <div class="status-bar" id="statusBar"></div>
 
-```
-<div class="tabs">
-    <div class="tab active" onclick="switchTab('responses')">Respuestas</div>
-    <div class="tab"        onclick="switchTab('knowledge')">Conocimiento</div>
-</div>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('responses')">Respuestas</div>
+        <div class="tab" onclick="switchTab('knowledge')">Conocimiento</div>
+    </div>
 
-<div class="section">
-    <h2>Agregar nuevo</h2>
-    <div id="formFields"></div>
-    <button onclick="addItem()">Guardar</button>
-</div>
+    <div class="section">
+        <h2>Agregar nuevo</h2>
+        <div id="formFields"></div>
+        <button onclick="addItem()">Guardar</button>
+    </div>
 
-<div class="section">
-    <h2>Contenido guardado</h2>
-    <div class="item-list" id="itemsList"></div>
-</div>
+    <div class="section">
+        <h2>Contenido guardado</h2>
+        <div class="item-list" id="itemsList"></div>
+    </div>
 
-<button class="red" onclick="logout()" style="margin-top:12px;">Cerrar sesión</button>
-```
-
+    <button class="red" onclick="logout()" style="margin-top:12px;">Cerrar sesión</button>
 </div>
 
 <script>
@@ -128,7 +125,7 @@
     function switchTab(tab) {
         currentTab = tab;
         document.querySelectorAll('.tab').forEach(function(t) {
-            t.classList.toggle('active', t.textContent.trim() === (tab === 'responses' ? 'Respuestas' : 'Conocimiento'));
+            t.classList.toggle('active', t.textContent.trim().toLowerCase().includes(tab));
         });
         renderForm();
         renderList();
@@ -138,107 +135,102 @@
     function renderForm() {
         var f = document.getElementById('formFields');
         if (currentTab === 'responses') {
-            f.innerHTML = `
-                <label>Categoria (debe coincidir exacto con knowledge)</label>
-                <input type="text" id="f_category" placeholder="ej: saludos">
-                <label>Modelo</label>
-                <select id="f_model">
-                    <option value="eva">Eva</option>
-                    <option value="selene">Selene</option>
-                    <option value="nyx">Nyx</option>
-                    <option value="aria">Aria</option>
-                </select>
-                <label>Respuesta</label>
-                <textarea id="f_text" placeholder="Hola! Soy Eva..."></textarea>
-
-```
-        `;
-    } else {
-        f.innerHTML = `
-            <label>Categoria</label>
-            <input type="text" id="f_category" placeholder="ej: saludos">
-            <label>Palabras clave (separadas por coma)</label>
-            <input type="text" id="f_keywords" placeholder="hola, hey, buenas">
-        `;
-    }
-}
-
-// ============ GUARDAR ============
-function addItem() {
-    var category = (document.getElementById('f_category')?.value || '').trim().toLowerCase();
-    if (!category) return alert('Llena la categoria');
-
-    if (currentTab === 'responses') {
-        var model = document.getElementById('f_model').value;
-        var text  = (document.getElementById('f_text')?.value || '').trim();
-        if (!text) return alert('Llena la respuesta');
-        var arr = getData('responses');
-        arr.push({ id: Date.now(), category: category, model: model, text: text });
-        saveData('responses', arr);
-
-    } else {
-        var kw = (document.getElementById('f_keywords')?.value || '').trim();
-        if (!kw) return alert('Llena las palabras clave');
-        var arr2 = getData('knowledge');
-        // Si ya existe esa categoria, fusionar keywords
-        var idx = arr2.findIndex(function(k) { return k.category === category; });
-        var incoming = kw.split(',').map(function(k) { return k.trim().toLowerCase(); }).filter(Boolean);
-        if (idx >= 0) {
-            arr2[idx].keywords = Array.from(new Set(arr2[idx].keywords.concat(incoming)));
+            f.innerHTML = 
+                '<label>Categoria (debe coincidir exacto con knowledge)</label>' +
+                '<input type="text" id="f_category" placeholder="ej: saludos">' +
+                '<label>Modelo</label>' +
+                '<select id="f_model">' +
+                    '<option value="eva">Eva</option>' +
+                    '<option value="selene">Selene</option>' +
+                    '<option value="nyx">Nyx</option>' +
+                    '<option value="aria">Aria</option>' +
+                '</select>' +
+                '<label>Respuesta</label>' +
+                '<textarea id="f_text" placeholder="Hola! Soy Eva..."></textarea>';
         } else {
-            arr2.push({ id: Date.now(), category: category, keywords: incoming });
+            f.innerHTML = 
+                '<label>Categoria</label>' +
+                '<input type="text" id="f_category" placeholder="ej: saludos">' +
+                '<label>Palabras clave (separadas por coma)</label>' +
+                '<input type="text" id="f_keywords" placeholder="hola, hey, buenas">';
         }
-        saveData('knowledge', arr2);
     }
 
-    setStatus('✅ Guardado');
-    renderForm();
-    renderList();
-}
+    // ============ GUARDAR ============
+    function addItem() {
+        var category = (document.getElementById('f_category')?.value || '').trim().toLowerCase();
+        if (!category) return alert('Llena la categoria');
 
-// ============ LISTA ============
-function renderList() {
-    var listDiv = document.getElementById('itemsList');
-    var items   = getData(currentTab);
+        if (currentTab === 'responses') {
+            var model = document.getElementById('f_model').value;
+            var text  = (document.getElementById('f_text')?.value || '').trim();
+            if (!text) return alert('Llena la respuesta');
+            var arr = getData('responses');
+            arr.push({ id: Date.now(), category: category, model: model, text: text });
+            saveData('responses', arr);
+        } else {
+            var kw = (document.getElementById('f_keywords')?.value || '').trim();
+            if (!kw) return alert('Llena las palabras clave');
+            var arr2 = getData('knowledge');
+            var idx = arr2.findIndex(function(k) { return k.category === category; });
+            var incoming = kw.split(',').map(function(k) { return k.trim().toLowerCase(); }).filter(Boolean);
+            if (idx >= 0) {
+                arr2[idx].keywords = Array.from(new Set(arr2[idx].keywords.concat(incoming)));
+            } else {
+                arr2.push({ id: Date.now(), category: category, keywords: incoming });
+            }
+            saveData('knowledge', arr2);
+        }
 
-    if (items.length === 0) {
-        listDiv.innerHTML = '<p style="color:#777;text-align:center;padding:20px;">No hay contenido aun</p>';
-        return;
+        setStatus('✅ Guardado correctamente');
+        renderForm();
+        renderList();
     }
 
-    listDiv.innerHTML = items.map(function(item) {
-        var title = currentTab === 'responses'
-            ? (item.text || '').substring(0, 60)
-            : (Array.isArray(item.keywords) ? item.keywords.join(', ') : '');
-        var meta = currentTab === 'responses'
-            ? item.category + ' — ' + item.model
-            : 'Categoria: ' + item.category;
-        return '<div class="item-card">'
-            + '<div class="item-info">'
-            + '<div class="item-title">' + esc(title) + '</div>'
-            + '<div class="item-meta">' + esc(meta) + '</div>'
-            + '</div>'
-            + '<button class="small red" onclick="deleteItem(\'' + currentTab + '\',' + item.id + ')">Eliminar</button>'
-            + '</div>';
-    }).join('');
-}
+    // ============ LISTA ============
+    function renderList() {
+        var listDiv = document.getElementById('itemsList');
+        var items   = getData(currentTab);
 
-// ============ ELIMINAR ============
-function deleteItem(key, id) {
-    if (!confirm('Eliminar?')) return;
-    var arr = getData(key).filter(function(i) { return i.id !== id; });
-    saveData(key, arr);
-    setStatus('🗑️ Eliminado');
-    renderList();
-}
+        if (items.length === 0) {
+            listDiv.innerHTML = '<p style="color:#777;text-align:center;padding:20px;">No hay contenido aún</p>';
+            return;
+        }
 
-// ============ UTILS ============
-function setStatus(msg) { document.getElementById('statusBar').textContent = msg; }
-function esc(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-```
+        listDiv.innerHTML = items.map(function(item) {
+            var title = currentTab === 'responses'
+                ? (item.text || '').substring(0, 60)
+                : (Array.isArray(item.keywords) ? item.keywords.join(', ') : '');
+            var meta = currentTab === 'responses'
+                ? item.category + ' — ' + item.model
+                : 'Categoria: ' + item.category;
+            return '<div class="item-card">' +
+                '<div class="item-info">' +
+                '<div class="item-title">' + esc(title) + '</div>' +
+                '<div class="item-meta">' + esc(meta) + '</div>' +
+                '</div>' +
+                '<button class="small red" onclick="deleteItem(\'' + currentTab + '\',' + item.id + ')">Eliminar</button>' +
+                '</div>';
+        }).join('');
+    }
 
+    // ============ ELIMINAR ============
+    function deleteItem(key, id) {
+        if (!confirm('¿Eliminar este item?')) return;
+        var arr = getData(key).filter(function(i) { return i.id !== id; });
+        saveData(key, arr);
+        setStatus('🗑️ Eliminado');
+        renderList();
+    }
+
+    // ============ UTILS ============
+    function setStatus(msg) { 
+        document.getElementById('statusBar').textContent = msg; 
+        setTimeout(function() { document.getElementById('statusBar').textContent = ''; }, 3000);
+    }
+    function esc(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
 </script>
 </body>
 </html>
