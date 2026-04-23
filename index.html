@@ -14,7 +14,6 @@
             flex-direction: column;
             height: 100dvh;
         }
-
         header {
             display: flex;
             justify-content: space-between;
@@ -43,7 +42,6 @@
             gap: 4px;
             cursor: pointer;
         }
-
         .promo-banner {
             margin: 0 20px;
             padding: 12px 16px;
@@ -57,7 +55,6 @@
         }
         .promo-text { color: #555; }
         .promo-link { color: #2563EB; text-decoration: none; font-weight: 500; }
-
         .chat-area {
             flex-grow: 1;
             overflow-y: auto;
@@ -68,22 +65,16 @@
             -webkit-overflow-scrolling: touch;
         }
         .chat-area.active { display: flex; }
-
         main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         main.hidden { display: none; }
-
         .logo-star { color: #D48A72; margin-bottom: 24px; }
         .greeting {
             font-family: Georgia, 'Times New Roman', serif;
             font-size: 28px; color: #333; line-height: 1.2; max-width: 300px;
         }
-
-        .message-wrapper {
-            max-width: 85%;
-        }
+        .message-wrapper { max-width: 85%; }
         .message-wrapper.user-wrapper { align-self: flex-end; }
         .message-wrapper.eva-wrapper { align-self: flex-start; }
-
         .message {
             padding: 12px 16px; border-radius: 18px;
             line-height: 1.4; font-size: 15px; word-wrap: break-word;
@@ -95,145 +86,78 @@
         }
         .message.user { background: #2563EB; color: #fff; border-bottom-right-radius: 4px; }
         .message.eva { background: #F0F0F0; color: #333; border-bottom-left-radius: 4px; }
-
         .message-actions {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 6px;
-            padding-left: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
+            display: flex; align-items: center; gap: 4px; margin-top: 6px;
+            padding-left: 4px; opacity: 0; transition: opacity 0.2s;
         }
         .message-wrapper:hover .message-actions,
         .message-wrapper:active .message-actions { opacity: 1; }
-
         .action-mini-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: none;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #999;
-            transition: all 0.2s;
+            width: 30px; height: 30px; border-radius: 50%; border: none;
+            background: transparent; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; color: #999; transition: all 0.2s;
         }
         .action-mini-btn:active { transform: scale(0.9); background: rgba(0,0,0,0.05); }
         .action-mini-btn.liked { color: #2563EB; }
         .action-mini-btn.disliked { color: #EF4444; }
         .action-mini-btn.copied { color: #2563EB; }
-
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            align-self: flex-start;
-        }
-        .eva-thinking {
-            width: 40px;
-            height: 40px;
-            position: relative;
-            flex-shrink: 0;
-        }
+        .typing-indicator { display: flex; align-items: center; gap: 10px; align-self: flex-start; }
+        .eva-thinking { width: 40px; height: 40px; position: relative; flex-shrink: 0; }
         .eva-thinking .sphere {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 50%;
             background: linear-gradient(135deg, #D48A72, #e8a87c, #D48A72);
-            position: relative;
-            animation: float3D 2s ease-in-out infinite;
-            box-shadow: 
-                0 10px 20px rgba(212, 138, 114, 0.4),
-                0 0 0 4px rgba(212, 138, 114, 0.2),
-                inset 0 -5px 10px rgba(0,0,0,0.1),
-                inset 0 5px 10px rgba(255,255,255,0.3);
+            position: relative; animation: float3D 2s ease-in-out infinite;
+            box-shadow: 0 10px 20px rgba(212,138,114,0.4), 0 0 0 4px rgba(212,138,114,0.2),
+                inset 0 -5px 10px rgba(0,0,0,0.1), inset 0 5px 10px rgba(255,255,255,0.3);
         }
         .eva-thinking .sphere::after {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 10px;
-            width: 8px;
-            height: 8px;
-            background: rgba(255,255,255,0.8);
-            border-radius: 50%;
-            box-shadow: 12px 4px 0 -2px rgba(255,255,255,0.6);
+            content: ''; position: absolute; top: 8px; left: 10px;
+            width: 8px; height: 8px; background: rgba(255,255,255,0.8);
+            border-radius: 50%; box-shadow: 12px 4px 0 -2px rgba(255,255,255,0.6);
         }
         .eva-thinking .sphere::before {
-            content: '';
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 16px;
-            height: 4px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 50%;
+            content: ''; position: absolute; bottom: 8px; left: 50%;
+            transform: translateX(-50%); width: 16px; height: 4px;
+            background: rgba(0,0,0,0.2); border-radius: 50%;
             animation: mouthTalk 0.6s ease-in-out infinite;
         }
         @keyframes float3D {
-            0%, 100% { transform: translateY(0) rotateY(0deg) rotateX(0deg); }
+            0%,100% { transform: translateY(0) rotateY(0deg) rotateX(0deg); }
             25% { transform: translateY(-6px) rotateY(10deg) rotateX(5deg); }
             50% { transform: translateY(-3px) rotateY(-5deg) rotateX(-3deg); }
             75% { transform: translateY(-8px) rotateY(-10deg) rotateX(5deg); }
         }
         @keyframes mouthTalk {
-            0%, 100% { transform: translateX(-50%) scaleX(1); }
+            0%,100% { transform: translateX(-50%) scaleX(1); }
             50% { transform: translateX(-50%) scaleX(0.4); }
         }
-        .eva-particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-        }
+        .eva-particles { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
         .eva-particles .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #D48A72;
-            border-radius: 50%;
-            animation: particleFloat 1.5s ease-in-out infinite;
+            position: absolute; width: 4px; height: 4px; background: #D48A72;
+            border-radius: 50%; animation: particleFloat 1.5s ease-in-out infinite;
         }
         .particle:nth-child(1) { left: -8px; top: 50%; animation-delay: 0s; }
         .particle:nth-child(2) { right: -6px; top: 30%; animation-delay: 0.4s; }
         .particle:nth-child(3) { left: 50%; top: -8px; animation-delay: 0.8s; }
         @keyframes particleFloat {
-            0%, 100% { opacity: 0; transform: translateY(0) scale(0); }
+            0%,100% { opacity: 0; transform: translateY(0) scale(0); }
             50% { opacity: 1; transform: translateY(-10px) scale(1.5); }
         }
-        .thinking-text {
-            font-size: 12px;
-            color: #999;
-            font-style: italic;
-        }
+        .thinking-text { font-size: 12px; color: #999; font-style: italic; }
         .thinking-bubble {
-            background: #F0F0F0;
-            border-radius: 18px;
-            border-bottom-left-radius: 4px;
-            padding: 10px 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            background: #F0F0F0; border-radius: 18px; border-bottom-left-radius: 4px;
+            padding: 10px 14px; display: flex; align-items: center; gap: 6px;
         }
         .thinking-dot {
-            width: 6px;
-            height: 6px;
-            background: #999;
-            border-radius: 50%;
+            width: 6px; height: 6px; background: #999; border-radius: 50%;
             animation: dotPulse 1.4s infinite;
         }
         .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
         .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes dotPulse {
-            0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+            0%,60%,100% { opacity: 0.3; transform: scale(0.8); }
             30% { opacity: 1; transform: scale(1.3); }
         }
-
         .input-container { padding: 20px; padding-bottom: 30px; }
         .input-box {
             background-color: #F4F4F4; border-radius: 24px;
@@ -253,7 +177,6 @@
             width: 36px; height: 36px; display: flex;
             justify-content: center; align-items: center; cursor: pointer;
         }
-
         .model-dropdown {
             display: none; position: absolute; top: 60px; left: 50%;
             transform: translateX(-50%); background: #fff;
@@ -267,45 +190,31 @@
         }
         .model-option:hover { background: #f5f5f5; }
         .model-option.selected { font-weight: 600; color: #2563EB; background: #f8faff; }
-        .model-icon {
-            width: 20px; height: 20px;
-            display: flex; align-items: center; justify-content: center;
-        }
-
+        .model-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
         .disclaimer {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 8px 16px;
-            font-size: 11px;
-            color: #999;
-            text-align: center;
+            display: flex; align-items: center; justify-content: center;
+            gap: 6px; padding: 8px 16px; font-size: 11px; color: #999; text-align: center;
         }
         .disclaimer .mini-eva {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
+            width: 16px; height: 16px; border-radius: 50%;
             background: linear-gradient(135deg, #D48A72, #e8a87c);
-            animation: miniFloat 2s ease-in-out infinite;
-            flex-shrink: 0;
+            animation: miniFloat 2s ease-in-out infinite; flex-shrink: 0;
             box-shadow: 0 2px 4px rgba(212,138,114,0.3);
         }
         @keyframes miniFloat {
-            0%, 100% { transform: translateY(0); }
+            0%,100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
         }
-
         svg { width: 20px; height: 20px; fill: currentColor; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="icon-btn" onclick="clearChat()">
+        <div class="icon-btn" id="clearChatBtn">
             <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
-        <div class="model-selector" onclick="toggleModelDropdown()">
+        <div class="model-selector" id="modelSelectorBtn">
             <span id="currentModelName">Eva 1.0</span>
             <svg style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </div>
@@ -341,14 +250,14 @@
 
     <div class="input-container">
         <div class="input-box">
-            <div class="action-icon" onclick="document.getElementById('chatInput').focus()">
+            <div class="action-icon" id="focusInputBtn">
                 <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </div>
-            <input type="text" id="chatInput" placeholder="Habla con Eva..." onkeydown="if(event.key==='Enter')sendMessage()">
-            <div class="action-icon" onclick="startVoice()">
+            <input type="text" id="chatInput" placeholder="Habla con Eva...">
+            <div class="action-icon" id="micBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
             </div>
-            <div class="voice-icon" onclick="sendMessage()">
+            <div class="voice-icon" id="sendBtn">
                 <svg style="width:16px; height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3M21 12h-3M8 12v6M16 12v6M12 5v14"></path></svg>
             </div>
         </div>
@@ -378,13 +287,11 @@
         let currentModel = 'eva';
         let isProcessing = false;
         let typewriterTimers = [];
-        
-        // Datos desde Firebase
         let models = [];
         let knowledge = [];
         let responses = [];
 
-        // Cargar datos de Firebase
+        // ============ Firebase ============
         async function loadFromFirebase() {
             try {
                 const [modelSnap, knowSnap, respSnap] = await Promise.all([
@@ -393,17 +300,22 @@
                     getDocs(collection(db, 'responses'))
                 ]);
 
+                if (modelSnap.empty && knowSnap.empty && respSnap.empty) {
+                    throw new Error('Colecciones vacias');
+                }
+
                 models = modelSnap.docs.map(d => ({ id: d.id, ...d.data() }));
                 knowledge = knowSnap.docs.map(d => ({ id: d.id, ...d.data() }));
                 responses = respSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
                 document.getElementById('syncStatus').textContent = 'Contenido sincronizado';
-                renderModelDropdown();
+                console.log('Firebase loaded:', { models, knowledge, responses });
             } catch (e) {
-                console.log('Usando datos locales:', e);
+                console.log('Usando datos locales:', e.message);
                 document.getElementById('syncStatus').textContent = 'Modo local';
                 useLocalData();
             }
+            renderModelDropdown();
         }
 
         function useLocalData() {
@@ -414,7 +326,7 @@
                 { modelId: 'aria', name: 'Aria', style: 'analitica' }
             ];
             knowledge = [
-                { category: 'saludos', keywords: ['hola','hey','buenas','saludos','que tal','como estas','buenos dias','buenas tardes','buenas noches','holi'] },
+                { category: 'saludos', keywords: ['hola','holaa','hey','buenas','saludos','que tal','como estas','buenos dias','buenas tardes','buenas noches','holi'] },
                 { category: 'despedidas', keywords: ['adios','chao','bye','hasta luego','nos vemos','me voy'] },
                 { category: 'agradecimientos', keywords: ['gracias','te agradezco','muchas gracias'] },
                 { category: 'identidad', keywords: ['quien eres','como te llamas','que eres','nombre'] },
@@ -431,10 +343,9 @@
                 { category: 'despedidas', model: 'nyx', text: 'La noche te guarde.' },
                 { category: 'despedidas', model: 'aria', text: 'Cierre de sesion. Adios.' },
                 { category: 'agradecimientos', model: 'eva', text: 'De nada! Para eso esta Eva.' },
-                { category: 'identidad', model: 'eva', text: 'Soy Eva, una IA 100% local con Firebase.' },
+                { category: 'identidad', model: 'eva', text: 'Soy Eva, una IA con Firebase. Me actualizo desde la nube.' },
                 { category: 'ayuda', model: 'eva', text: 'Puedo chatear, responder preguntas, hacer calculos y mas.' },
             ];
-            renderModelDropdown();
         }
 
         function renderModelDropdown() {
@@ -446,14 +357,15 @@
                 aria: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'
             };
             
+            const currentIdx = models.findIndex(m => m.modelId === currentModel);
+            
             dropdown.innerHTML = models.map((m, i) => `
-                <div class="model-option ${i === 0 ? 'selected' : ''}" data-model="${m.modelId}">
+                <div class="model-option ${i === currentIdx || (currentIdx === -1 && i === 0) ? 'selected' : ''}" data-model="${m.modelId}">
                     <span class="model-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[m.modelId] || '<circle cx="12" cy="12" r="10"/>'}</svg></span>
                     ${m.name}
                 </div>
             `).join('');
 
-            // Event listeners
             dropdown.querySelectorAll('.model-option').forEach(option => {
                 option.addEventListener('click', function() {
                     currentModel = this.dataset.model;
@@ -462,22 +374,33 @@
                     dropdown.querySelectorAll('.model-option').forEach(o => o.classList.remove('selected'));
                     this.classList.add('selected');
                     dropdown.classList.remove('active');
+                    console.log('Modelo cambiado a:', currentModel);
                 });
             });
         }
 
         function generateResponse(input) {
             const msg = input.toLowerCase().trim();
+            console.log('Buscando respuesta para:', msg, 'modelo:', currentModel);
+            console.log('Knowledge:', knowledge);
+            console.log('Responses:', responses);
             
-            // Buscar en conocimiento de Firebase
+            // Buscar en conocimiento
             for (const k of knowledge) {
-                if (k.keywords.some(kw => msg.includes(kw))) {
+                const keywords = Array.isArray(k.keywords) ? k.keywords : [];
+                if (keywords.some(kw => msg.includes(kw))) {
+                    console.log('Categoria encontrada:', k.category);
+                    // Buscar respuestas para este modelo y categoria
                     const categoryResponses = responses.filter(r => r.category === k.category && r.model === currentModel);
+                    console.log('Respuestas modelo especifico:', categoryResponses);
+                    
                     if (categoryResponses.length > 0) {
                         return categoryResponses[Math.floor(Math.random() * categoryResponses.length)].text;
                     }
-                    // Si no hay del modelo especifico, buscar cualquiera de esa categoria
+                    
+                    // Buscar cualquiera de esa categoria
                     const anyResponses = responses.filter(r => r.category === k.category);
+                    console.log('Respuestas cualquiera:', anyResponses);
                     if (anyResponses.length > 0) {
                         return anyResponses[Math.floor(Math.random() * anyResponses.length)].text;
                     }
@@ -515,17 +438,11 @@
         }
 
         // ============ UI ============
-        window.toggleModelDropdown = function() {
+        function toggleDropdown() {
             document.getElementById('modelDropdown').classList.toggle('active');
-        };
+        }
 
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.model-selector') && !e.target.closest('.model-dropdown')) {
-                document.getElementById('modelDropdown').classList.remove('active');
-            }
-        });
-
-        window.sendMessage = function() {
+        function sendMessage() {
             if (isProcessing) return;
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
@@ -546,7 +463,7 @@
                 typewriterEffect(reply, 'eva');
                 isProcessing = false;
             }, 600 + Math.random() * 1000);
-        };
+        }
 
         function typewriterEffect(text, sender) {
             const chatArea = document.getElementById('chatArea');
@@ -643,15 +560,15 @@
             if (el) el.remove();
         }
 
-        window.clearChat = function() {
+        function clearChat() {
             typewriterTimers.forEach(t => clearTimeout(t));
             typewriterTimers = [];
             document.getElementById('chatArea').innerHTML = '';
             document.getElementById('chatArea').classList.remove('active');
             document.getElementById('welcomeScreen').classList.remove('hidden');
-        };
+        }
 
-        window.startVoice = function() {
+        function startVoice() {
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 const recognition = new SpeechRecognition();
@@ -666,7 +583,23 @@
             } else {
                 document.getElementById('chatInput').focus();
             }
-        };
+        }
+
+        // ============ Event Listeners ============
+        document.getElementById('modelSelectorBtn').addEventListener('click', toggleDropdown);
+        document.getElementById('clearChatBtn').addEventListener('click', clearChat);
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('micBtn').addEventListener('click', startVoice);
+        document.getElementById('focusInputBtn').addEventListener('click', () => document.getElementById('chatInput').focus());
+        document.getElementById('chatInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.model-selector') && !e.target.closest('.model-dropdown')) {
+                document.getElementById('modelDropdown').classList.remove('active');
+            }
+        });
 
         // Init
         loadFromFirebase();
