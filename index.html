@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat IA</title>
+    <style>
+        /* Estilos generales */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #FCFCFC;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100dvh; /* Usa dvh para adaptarse bien en iOS */
+        }
+
+        /* Cabecera */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+        }
+        .icon-btn {
+            background: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .model-selector {
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Banner Promo */
+        .promo-banner {
+            margin: 0 20px;
+            padding: 12px 16px;
+            background-color: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .promo-text { color: #555; }
+        .promo-link { color: #2563EB; text-decoration: none; font-weight: 500; }
+
+        /* Contenido Central (Saludo) */
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .logo-star {
+            color: #D48A72; /* Color de la estrella de Claude */
+            margin-bottom: 24px;
+        }
+        .greeting {
+            font-family: Georgia, 'Times New Roman', serif; /* Fuente con serifa para el estilo elegante */
+            font-size: 28px;
+            color: #333;
+            line-height: 1.2;
+            max-width: 300px;
+        }
+
+        /* Área de Input */
+        .input-container {
+            padding: 20px;
+            padding-bottom: 30px; /* Espacio para el indicador de inicio del iPhone */
+        }
+        .input-box {
+            background-color: #F4F4F4;
+            border-radius: 24px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .input-box input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #333;
+        }
+        .input-box input::placeholder {
+            color: #888;
+        }
+        .action-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            color: #555;
+        }
+        .voice-icon {
+            background-color: #000;
+            color: #fff;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Utilidades SVG */
+        svg { width: 20px; height: 20px; fill: currentColor; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="icon-btn">
+            <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="model-selector">
+            Sonnet 4.6
+            <svg style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <div class="icon-btn">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+    </header>
+
+    <div class="promo-banner">
+        <span class="promo-text">Get more with Claude Pro</span>
+        <a href="#" class="promo-link">Actualizar</a>
+    </div>
+
+    <main>
+        <div class="logo-star">
+            <svg style="width:50px; height:50px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="2" x2="12" y2="22"></line>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <line x1="4.93" y1="19.07" x2="19.07" y2="4.93"></line>
+            </svg>
+        </div>
+        <h1 class="greeting">¿En qué puedo ayudarle esta tarde?</h1>
+    </main>
+
+    <div class="input-container">
+        <div class="input-box">
+            <div class="action-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <input type="text" placeholder="Chat con Claude">
+            <div class="action-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+            </div>
+            <div class="voice-icon">
+                <svg style="width:16px; height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3M21 12h-3M8 12v6M16 12v6M12 5v14"></path></svg>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
