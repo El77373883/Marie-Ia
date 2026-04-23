@@ -373,11 +373,16 @@
                 });
             }
 
-            // Knowledge: agregar solo categorias nuevas
+            // Knowledge: fusionar con categorias existentes
             if (!knowSnap.empty) {
                 knowSnap.docs.forEach(function(d) {
                     var fbK = Object.assign({ id: d.id }, d.data());
-                    if (!knowledge.find(function(k) { return k.category === fbK.category; })) {
+                    var idx = knowledge.findIndex(function(k) { return k.category === fbK.category; });
+                    if (idx >= 0) {
+                        var existing = knowledge[idx].keywords || [];
+                        var incoming = Array.isArray(fbK.keywords) ? fbK.keywords : [];
+                        knowledge[idx].keywords = Array.from(new Set(existing.concat(incoming)));
+                    } else {
                         knowledge.push(fbK);
                     }
                 });
