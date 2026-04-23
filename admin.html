@@ -9,89 +9,59 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #1a1a2e;
-            color: #eee;
-            padding: 20px;
-            min-height: 100dvh;
-            padding-bottom: 40px;
+            background: #1a1a2e; color: #eee;
+            padding: 20px; min-height: 100dvh; padding-bottom: 40px;
         }
         h1 { color: #D48A72; margin-bottom: 4px; font-size: 22px; }
         .subtitle { color: #777; font-size: 12px; margin-bottom: 24px; }
-
-```
-    .section {
-        background: #16213e;
-        border-radius: 14px;
-        padding: 18px;
-        margin-bottom: 18px;
-        border: 1px solid #2a2a4a;
-    }
-    .section h2 {
-        font-size: 15px; margin-bottom: 14px; color: #D48A72;
-        display: flex; align-items: center; gap: 6px;
-    }
-    label { display: block; font-size: 12px; color: #aaa; margin-bottom: 4px; }
-    input, textarea, select {
-        width: 100%; padding: 10px 12px; background: #0f0f23;
-        border: 1px solid #2a2a4a; border-radius: 8px;
-        color: #fff; font-size: 14px; font-family: inherit; margin-bottom: 10px;
-        -webkit-appearance: none;
-    }
-    textarea { min-height: 80px; resize: vertical; }
-    button {
-        background: #D48A72; color: #1a1a2e; border: none;
-        padding: 10px 20px; border-radius: 8px; font-weight: 600;
-        font-size: 13px; cursor: pointer; transition: all 0.2s;
-    }
-    button:active { transform: scale(0.95); }
-    button.red { background: #e74c3c; color: #fff; }
-    button.small { padding: 6px 12px; font-size: 11px; }
-
-    .item-list {
-        display: flex; flex-direction: column; gap: 8px;
-        max-height: 350px; overflow-y: auto;
-    }
-    .item-card {
-        background: #0f0f23; border-radius: 10px; padding: 12px;
-        border: 1px solid #2a2a4a;
-        display: flex; justify-content: space-between; align-items: center;
-        flex-wrap: wrap; gap: 8px;
-    }
-    .item-info { flex: 1; min-width: 150px; }
-    .item-info .item-title { font-weight: 600; font-size: 14px; }
-    .item-info .item-meta { font-size: 11px; color: #777; margin-top: 2px; }
-    .item-actions { display: flex; gap: 6px; }
-
-    .tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #16213e; border-radius: 10px; padding: 4px; }
-    .tab {
-        flex: 1; text-align: center; padding: 10px; border-radius: 8px;
-        cursor: pointer; font-size: 13px; color: #aaa; transition: all 0.2s;
-    }
-    .tab.active { background: #D48A72; color: #1a1a2e; font-weight: 600; }
-
-    .password-screen {
-        display: flex; flex-direction: column; align-items: center;
-        justify-content: center; min-height: 100dvh; gap: 16px;
-    }
-    .password-screen input {
-        width: 240px; text-align: center; font-size: 18px;
-    }
-
-    .status-bar {
-        font-size: 11px;
-        color: #D48A72;
-        margin-bottom: 12px;
-        min-height: 16px;
-    }
-</style>
-```
-
+        .section {
+            background: #16213e; border-radius: 14px; padding: 18px;
+            margin-bottom: 18px; border: 1px solid #2a2a4a;
+        }
+        .section h2 { font-size: 15px; margin-bottom: 14px; color: #D48A72; }
+        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 4px; }
+        input, textarea, select {
+            width: 100%; padding: 10px 12px; background: #0f0f23;
+            border: 1px solid #2a2a4a; border-radius: 8px;
+            color: #fff; font-size: 14px; font-family: inherit; margin-bottom: 10px;
+            -webkit-appearance: none;
+        }
+        textarea { min-height: 80px; resize: vertical; }
+        button {
+            background: #D48A72; color: #1a1a2e; border: none;
+            padding: 10px 20px; border-radius: 8px; font-weight: 600;
+            font-size: 13px; cursor: pointer; transition: all 0.2s;
+        }
+        button:active { transform: scale(0.95); }
+        button.red { background: #e74c3c; color: #fff; }
+        button.small { padding: 6px 12px; font-size: 11px; }
+        .item-list { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; }
+        .item-card {
+            background: #0f0f23; border-radius: 10px; padding: 12px;
+            border: 1px solid #2a2a4a; display: flex;
+            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+        }
+        .item-info { flex: 1; min-width: 150px; }
+        .item-info .item-title { font-weight: 600; font-size: 14px; }
+        .item-info .item-meta { font-size: 11px; color: #777; margin-top: 2px; }
+        .tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #16213e; border-radius: 10px; padding: 4px; }
+        .tab {
+            flex: 1; text-align: center; padding: 10px; border-radius: 8px;
+            cursor: pointer; font-size: 13px; color: #aaa; transition: all 0.2s;
+        }
+        .tab.active { background: #D48A72; color: #1a1a2e; font-weight: 600; }
+        .password-screen {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 100dvh; gap: 16px;
+        }
+        .password-screen input { width: 240px; text-align: center; font-size: 18px; }
+        .status-bar { font-size: 11px; color: #D48A72; margin-bottom: 12px; min-height: 16px; }
+    </style>
 </head>
 <body>
 
-```
 <div id="loginScreen" class="password-screen">
-    <h1 style="color:#D48A72;">Eva Admin</h1>
+    <h1>Eva Admin</h1>
     <input type="password" id="passInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
     <button onclick="login()">Entrar</button>
 </div>
@@ -99,89 +69,78 @@
 <div id="adminPanel" style="display:none;">
     <h1>Eva Admin</h1>
     <p class="subtitle">Gestiona el contenido de tu IA</p>
-    <div class="status-bar" id="statusBar">Cargando...</div>
+    <div class="status-bar" id="statusBar"></div>
 
-    <div class="tabs">
-        <div class="tab active"    onclick="switchTab('responses')">Respuestas</div>
-        <div class="tab"           onclick="switchTab('knowledge')">Conocimiento</div>
-        <div class="tab"           onclick="switchTab('models')">Modelos</div>
-    </div>
-
-    <!-- Agregar contenido -->
-    <div class="section">
-        <h2>Agregar nuevo</h2>
-        <div id="formFields"></div>
-        <button onclick="addItem()">Guardar</button>
-    </div>
-
-    <!-- Lista de items -->
-    <div class="section">
-        <h2>Contenido existente</h2>
-        <div class="item-list" id="itemsList"></div>
-    </div>
-
-    <button class="red" onclick="logout()" style="margin-top:12px;">Cerrar sesión</button>
+```
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('responses')">Respuestas</div>
+    <div class="tab"        onclick="switchTab('knowledge')">Conocimiento</div>
 </div>
 
-<!-- ✅ Firebase v10 modular (versión que SÍ existe) -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<div class="section">
+    <h2>Agregar nuevo</h2>
+    <div id="formFields"></div>
+    <button onclick="addItem()">Guardar</button>
+</div>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBiUKBNFkMcW2-5AMPZPxrmtqXzu4rS9ZM",
-        authDomain: "gen-lang-client-0059662230.firebaseapp.com",
-        projectId: "gen-lang-client-0059662230",
-        storageBucket: "gen-lang-client-0059662230.firebasestorage.app",
-        messagingSenderId: "146794930401",
-        appId: "1:146794930401:web:8eb012b2c3302b8381d7a0"
-    };
+<div class="section">
+    <h2>Contenido guardado</h2>
+    <div class="item-list" id="itemsList"></div>
+</div>
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+<button class="red" onclick="logout()" style="margin-top:12px;">Cerrar sesión</button>
+```
 
+</div>
+
+<script>
+    const PASS = 'eva2024';
     let currentTab = 'responses';
-    let allData    = { responses: [], knowledge: [], models: [] };
-
-    const ADMIN_PASS = 'eva2024';
 
     // ============ AUTH ============
-    window.login = function() {
-        const pass = document.getElementById('passInput').value;
-        if (pass === ADMIN_PASS) {
+    function login() {
+        if (document.getElementById('passInput').value === PASS) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminPanel').style.display  = 'block';
-            loadAll();
+            renderForm();
+            renderList();
+            setStatus('✅ Datos cargados correctamente');
         } else {
             alert('Contraseña incorrecta');
         }
-    };
+    }
 
-    window.logout = function() {
+    function logout() {
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('adminPanel').style.display  = 'none';
-        document.getElementById('passInput').value           = '';
-    };
+        document.getElementById('passInput').value = '';
+    }
+
+    // ============ STORAGE ============
+    function getData(key) {
+        try { return JSON.parse(localStorage.getItem('eva_' + key) || '[]'); } catch(e) { return []; }
+    }
+    function saveData(key, arr) {
+        localStorage.setItem('eva_' + key, JSON.stringify(arr));
+    }
 
     // ============ TABS ============
-    window.switchTab = function(tab) {
+    function switchTab(tab) {
         currentTab = tab;
-        // Marcar tab activo
-        document.querySelectorAll('.tab').forEach(t => {
-            const labels = { responses: 'Respuestas', knowledge: 'Conocimiento', models: 'Modelos' };
-            t.classList.toggle('active', t.textContent.trim() === labels[tab]);
+        document.querySelectorAll('.tab').forEach(function(t) {
+            t.classList.toggle('active', t.textContent.trim() === (tab === 'responses' ? 'Respuestas' : 'Conocimiento'));
         });
         renderForm();
         renderList();
-    };
+    }
 
     // ============ FORMULARIOS ============
     function renderForm() {
-        const formDiv = document.getElementById('formFields');
+        var f = document.getElementById('formFields');
         if (currentTab === 'responses') {
-            formDiv.innerHTML = `
-                <label>Categoria (saludos, despedidas, etc)</label>
-                <input type="text" id="f_category" placeholder="saludos">
+            f.innerHTML = `
+                <label>Categoria (debe coincidir exacto con knowledge)</label>
+                <input type="text" id="f_category" placeholder="ej: saludos">
                 <label>Modelo</label>
                 <select id="f_model">
                     <option value="eva">Eva</option>
@@ -191,164 +150,95 @@
                 </select>
                 <label>Respuesta</label>
                 <textarea id="f_text" placeholder="Hola! Soy Eva..."></textarea>
-            `;
-        } else if (currentTab === 'knowledge') {
-            formDiv.innerHTML = `
-                <label>Categoria (saludos, despedidas, etc)</label>
-                <input type="text" id="f_category" placeholder="saludos">
-                <label>Palabras clave (separadas por coma)</label>
-                <input type="text" id="f_keywords" placeholder="hola, hey, buenas">
-            `;
-        } else if (currentTab === 'models') {
-            formDiv.innerHTML = `
-                <label>ID del modelo (sin espacios, ej: eva)</label>
-                <input type="text" id="f_modelId" placeholder="eva">
-                <label>Nombre que ve el usuario</label>
-                <input type="text" id="f_name" placeholder="Eva 1.0">
-                <label>Estilo (directa / creativa / profunda / analitica)</label>
-                <input type="text" id="f_style" placeholder="directa">
-                <label>Saludo en pantalla principal</label>
-                <textarea id="f_greeting" placeholder="Hola, soy Eva.&#10;En que puedo ayudarte?"></textarea>
-            `;
+
+```
+        `;
+    } else {
+        f.innerHTML = `
+            <label>Categoria</label>
+            <input type="text" id="f_category" placeholder="ej: saludos">
+            <label>Palabras clave (separadas por coma)</label>
+            <input type="text" id="f_keywords" placeholder="hola, hey, buenas">
+        `;
+    }
+}
+
+// ============ GUARDAR ============
+function addItem() {
+    var category = (document.getElementById('f_category')?.value || '').trim().toLowerCase();
+    if (!category) return alert('Llena la categoria');
+
+    if (currentTab === 'responses') {
+        var model = document.getElementById('f_model').value;
+        var text  = (document.getElementById('f_text')?.value || '').trim();
+        if (!text) return alert('Llena la respuesta');
+        var arr = getData('responses');
+        arr.push({ id: Date.now(), category: category, model: model, text: text });
+        saveData('responses', arr);
+
+    } else {
+        var kw = (document.getElementById('f_keywords')?.value || '').trim();
+        if (!kw) return alert('Llena las palabras clave');
+        var arr2 = getData('knowledge');
+        // Si ya existe esa categoria, fusionar keywords
+        var idx = arr2.findIndex(function(k) { return k.category === category; });
+        var incoming = kw.split(',').map(function(k) { return k.trim().toLowerCase(); }).filter(Boolean);
+        if (idx >= 0) {
+            arr2[idx].keywords = Array.from(new Set(arr2[idx].keywords.concat(incoming)));
+        } else {
+            arr2.push({ id: Date.now(), category: category, keywords: incoming });
         }
+        saveData('knowledge', arr2);
     }
 
-    // ============ GUARDAR ============
-    window.addItem = async function() {
-        setStatus('Guardando...');
-        try {
-            if (currentTab === 'responses') {
-                const category = val('f_category');
-                const model    = val('f_model');
-                const text     = val('f_text');
-                if (!category || !text) return alert('Llena categoria y respuesta');
-                await addDoc(collection(db, 'responses'), { category, model, text, createdAt: Date.now() });
-
-            } else if (currentTab === 'knowledge') {
-                const category = val('f_category');
-                const keywords = val('f_keywords');
-                if (!category || !keywords) return alert('Llena categoria y palabras clave');
-                await addDoc(collection(db, 'knowledge'), {
-                    category,
-                    keywords: keywords.split(',').map(k => k.trim().toLowerCase()).filter(Boolean),
-                    createdAt: Date.now()
-                });
-
-            } else if (currentTab === 'models') {
-                const modelId  = val('f_modelId').toLowerCase().replace(/\s+/g,'');
-                const name     = val('f_name');
-                const style    = val('f_style');
-                const greeting = val('f_greeting');
-                if (!modelId || !name) return alert('Llena al menos ID y Nombre');
-                await addDoc(collection(db, 'models'), { modelId, name, style, greeting, createdAt: Date.now() });
-            }
-
-            setStatus('✅ Guardado correctamente');
-            await loadAll();
-            renderForm(); // limpiar campos
-        } catch (e) {
-            setStatus('❌ Error: ' + e.message);
-            console.error(e);
-        }
-    };
-
-    // ============ CARGAR ============
-    async function loadAll() {
-        setStatus('Sincronizando con Firebase...');
-        try {
-            // ✅ Sin orderBy para no necesitar índices en Firestore
-            const [respSnap, knowSnap, modelSnap] = await Promise.all([
-                getDocs(collection(db, 'responses')),
-                getDocs(collection(db, 'knowledge')),
-                getDocs(collection(db, 'models'))
-            ]);
-
-            allData.responses = respSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-            allData.knowledge = knowSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-            allData.models    = modelSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-            // Ordenar por createdAt manualmente (no requiere índice)
-            const byDate = (a, b) => (b.createdAt || 0) - (a.createdAt || 0);
-            allData.responses.sort(byDate);
-            allData.knowledge.sort(byDate);
-            allData.models.sort(byDate);
-
-            setStatus(`✅ ${allData.models.length} modelos · ${allData.knowledge.length} categorías · ${allData.responses.length} respuestas`);
-            renderList();
-        } catch (e) {
-            setStatus('❌ Error al cargar: ' + e.message);
-            console.error(e);
-        }
-    }
-
-    // ============ RENDERIZAR LISTA ============
-    function renderList() {
-        const listDiv = document.getElementById('itemsList');
-        const items   = allData[currentTab] || [];
-
-        if (items.length === 0) {
-            listDiv.innerHTML = '<p style="color:#777;text-align:center;padding:20px;">No hay contenido aun</p>';
-            return;
-        }
-
-        listDiv.innerHTML = items.map(item => {
-            let title = '';
-            let meta  = '';
-            if (currentTab === 'responses') {
-                title = item.text?.substring(0, 60) || '(sin texto)';
-                meta  = `${item.category || '?'} — ${item.model || '?'}`;
-            } else if (currentTab === 'knowledge') {
-                title = Array.isArray(item.keywords) ? item.keywords.join(', ') : '(sin keywords)';
-                meta  = 'Categoria: ' + (item.category || '?');
-            } else {
-                title = item.name || item.modelId || '(sin nombre)';
-                meta  = 'ID: ' + (item.modelId || item.id);
-            }
-            return `
-                <div class="item-card">
-                    <div class="item-info">
-                        <div class="item-title">${escHtml(title)}</div>
-                        <div class="item-meta">${escHtml(meta)}</div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="small red" onclick="deleteItem('${currentTab}','${item.id}')">Eliminar</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    // ============ ELIMINAR ============
-    window.deleteItem = async function(collName, id) {
-        if (!confirm('Eliminar este elemento?')) return;
-        try {
-            await deleteDoc(doc(db, collName, id));
-            setStatus('🗑️ Eliminado');
-            await loadAll();
-        } catch (e) {
-            setStatus('❌ Error al eliminar: ' + e.message);
-        }
-    };
-
-    // ============ UTILS ============
-    function val(id) {
-        return (document.getElementById(id)?.value || '').trim();
-    }
-    function setStatus(msg) {
-        document.getElementById('statusBar').textContent = msg;
-    }
-    function escHtml(str) {
-        return String(str)
-            .replace(/&/g,'&amp;')
-            .replace(/</g,'&lt;')
-            .replace(/>/g,'&gt;')
-            .replace(/"/g,'&quot;');
-    }
-
-    // ============ INIT ============
+    setStatus('✅ Guardado');
     renderForm();
-</script>
+    renderList();
+}
+
+// ============ LISTA ============
+function renderList() {
+    var listDiv = document.getElementById('itemsList');
+    var items   = getData(currentTab);
+
+    if (items.length === 0) {
+        listDiv.innerHTML = '<p style="color:#777;text-align:center;padding:20px;">No hay contenido aun</p>';
+        return;
+    }
+
+    listDiv.innerHTML = items.map(function(item) {
+        var title = currentTab === 'responses'
+            ? (item.text || '').substring(0, 60)
+            : (Array.isArray(item.keywords) ? item.keywords.join(', ') : '');
+        var meta = currentTab === 'responses'
+            ? item.category + ' — ' + item.model
+            : 'Categoria: ' + item.category;
+        return '<div class="item-card">'
+            + '<div class="item-info">'
+            + '<div class="item-title">' + esc(title) + '</div>'
+            + '<div class="item-meta">' + esc(meta) + '</div>'
+            + '</div>'
+            + '<button class="small red" onclick="deleteItem(\'' + currentTab + '\',' + item.id + ')">Eliminar</button>'
+            + '</div>';
+    }).join('');
+}
+
+// ============ ELIMINAR ============
+function deleteItem(key, id) {
+    if (!confirm('Eliminar?')) return;
+    var arr = getData(key).filter(function(i) { return i.id !== id; });
+    saveData(key, arr);
+    setStatus('🗑️ Eliminado');
+    renderList();
+}
+
+// ============ UTILS ============
+function setStatus(msg) { document.getElementById('statusBar').textContent = msg; }
+function esc(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 ```
 
+</script>
 </body>
 </html>
