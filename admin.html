@@ -1,116 +1,211 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Eva Admin</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #1a1a2e; color: #eee;
-            padding: 20px; min-height: 100dvh; padding-bottom: 40px;
+            background: #0a0a1a; color: #eee;
+            padding: 16px; min-height: 100dvh; padding-bottom: 40px;
         }
-        h1 { color: #D48A72; margin-bottom: 4px; font-size: 22px; }
-        .subtitle { color: #777; font-size: 12px; margin-bottom: 24px; }
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+        }
+        h1 { 
+            background: linear-gradient(135deg, #D48A72, #e8a87c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 26px; font-weight: 800;
+        }
+        .stats {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #16213e; border-radius: 12px; padding: 14px;
+            border: 1px solid #2a2a4a; text-align: center;
+        }
+        .stat-number { font-size: 28px; font-weight: 800; color: #D48A72; }
+        .stat-label { font-size: 11px; color: #777; margin-top: 2px; }
         .section {
-            background: #16213e; border-radius: 14px; padding: 18px;
-            margin-bottom: 18px; border: 1px solid #2a2a4a;
+            background: #16213e; border-radius: 14px; padding: 16px;
+            margin-bottom: 14px; border: 1px solid #2a2a4a;
         }
-        .section h2 { font-size: 15px; margin-bottom: 14px; color: #D48A72; }
-        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 4px; }
+        .section h2 { font-size: 15px; margin-bottom: 12px; color: #D48A72; display: flex; align-items: center; gap: 8px; }
+        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 4px; font-weight: 500; }
         input, textarea, select {
-            width: 100%; padding: 10px 12px; background: #0f0f23;
-            border: 1px solid #2a2a4a; border-radius: 8px;
+            width: 100%; padding: 11px 14px; background: #0f0f23;
+            border: 1px solid #2a2a4a; border-radius: 10px;
             color: #fff; font-size: 14px; font-family: inherit; margin-bottom: 10px;
-            -webkit-appearance: none;
+            -webkit-appearance: none; transition: border 0.2s;
         }
+        input:focus, textarea:focus, select:focus { border-color: #D48A72; outline: none; }
         textarea { min-height: 80px; resize: vertical; }
+        .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
         button {
-            background: #D48A72; color: #1a1a2e; border: none;
-            padding: 10px 20px; border-radius: 8px; font-weight: 600;
+            background: #D48A72; color: #0a0a1a; border: none;
+            padding: 11px 18px; border-radius: 10px; font-weight: 700;
             font-size: 13px; cursor: pointer; transition: all 0.2s;
+            flex: 1; min-width: 80px;
         }
         button:active { transform: scale(0.95); }
         button.red { background: #e74c3c; color: #fff; }
-        button.small { padding: 6px 12px; font-size: 11px; }
-        .item-list { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; }
+        button.green { background: #27ae60; color: #fff; }
+        button.blue { background: #3498db; color: #fff; }
+        button.outline { background: transparent; border: 2px solid #D48A72; color: #D48A72; }
+        .item-list { display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .item-card {
             background: #0f0f23; border-radius: 10px; padding: 12px;
             border: 1px solid #2a2a4a; display: flex;
             justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+            animation: fadeIn 0.3s ease;
         }
-        .item-info { flex: 1; min-width: 150px; }
-        .item-info .item-title { font-weight: 600; font-size: 14px; }
-        .item-info .item-meta { font-size: 11px; color: #777; margin-top: 2px; }
-        .tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #16213e; border-radius: 10px; padding: 4px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .item-info { flex: 1; min-width: 140px; }
+        .item-info .item-title { font-weight: 600; font-size: 14px; color: #fff; }
+        .item-info .item-meta { font-size: 11px; color: #888; margin-top: 3px; }
+        .item-actions { display: flex; gap: 4px; }
+        .item-actions button { padding: 7px 10px; font-size: 11px; min-width: auto; flex: none; border-radius: 6px; }
+        .tabs { display: flex; gap: 4px; margin-bottom: 14px; background: #16213e; border-radius: 10px; padding: 4px; }
         .tab {
             flex: 1; text-align: center; padding: 10px; border-radius: 8px;
-            cursor: pointer; font-size: 13px; color: #aaa; transition: all 0.2s;
+            cursor: pointer; font-size: 13px; color: #aaa; transition: all 0.2s; font-weight: 500;
         }
-        .tab.active { background: #D48A72; color: #1a1a2e; font-weight: 600; }
-        .password-screen {
+        .tab.active { background: #D48A72; color: #0a0a1a; font-weight: 700; }
+        .login-screen {
             display: flex; flex-direction: column; align-items: center;
-            justify-content: center; min-height: 100dvh; gap: 16px;
+            justify-content: center; min-height: 90dvh; gap: 16px;
         }
-        .password-screen input { width: 240px; text-align: center; font-size: 18px; }
-        .status-bar { font-size: 11px; color: #D48A72; margin-bottom: 12px; min-height: 16px; }
+        .login-screen .logo {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: linear-gradient(135deg, #D48A72, #e8a87c);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; box-shadow: 0 8px 25px rgba(212,138,114,0.4);
+            animation: float 2s ease-in-out infinite;
+        }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .login-screen input { width: 260px; text-align: center; font-size: 16px; }
+        .login-screen button { width: 260px; flex: none; }
+        .status-bar { 
+            font-size: 12px; padding: 8px 14px; border-radius: 8px; margin-bottom: 14px;
+            text-align: center; font-weight: 500; transition: all 0.3s;
+        }
+        .status-bar.success { background: #1a3a1a; color: #4ade80; }
+        .status-bar.error { background: #3a1a1a; color: #f87171; }
+        .search-bar { margin-bottom: 12px; }
+        .search-bar input { margin-bottom: 0; }
+        .edit-mode { border: 2px solid #D48A72 !important; }
+        .empty-state { text-align: center; padding: 30px; color: #555; }
+        .empty-state svg { width: 40px; height: 40px; margin-bottom: 10px; opacity: 0.5; }
+        .badge {
+            display: inline-block; padding: 3px 8px; border-radius: 6px;
+            font-size: 10px; font-weight: 600; margin-left: 4px;
+        }
+        .badge.eva { background: #D48A72; color: #1a1a2e; }
+        .badge.selene { background: #8b5cf6; color: #fff; }
+        .badge.nyx { background: #6b7280; color: #fff; }
+        .badge.aria { background: #06b6d4; color: #1a1a2e; }
     </style>
 </head>
 <body>
 
-<div id="loginScreen" class="password-screen">
-    <h1>Eva Admin</h1>
-    <input type="password" id="passInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
-    <button onclick="login()">Entrar</button>
+<!-- LOGIN -->
+<div id="loginScreen" class="login-screen">
+    <div class="logo">🤖</div>
+    <h1 style="font-size:24px;">Eva Admin</h1>
+    <p style="color:#777;font-size:13px;">Panel de gestión</p>
+    <input type="password" id="passInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()" autofocus>
+    <button onclick="login()">🔓 Entrar</button>
+    <p style="color:#555;font-size:11px;margin-top:8px;">Pista: es fácil 😉</p>
 </div>
 
+<!-- PANEL -->
 <div id="adminPanel" style="display:none;">
-    <h1>Eva Admin</h1>
-    <p class="subtitle">Gestiona el contenido de tu IA</p>
+    <div class="header">
+        <h1>🤖 Eva Admin</h1>
+        <button class="outline" onclick="logout()" style="flex:none;padding:8px 14px;font-size:11px;">Salir</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="statResponses">0</div>
+            <div class="stat-label">Respuestas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="statKnowledge">0</div>
+            <div class="stat-label">Categorías</div>
+        </div>
+    </div>
+
     <div class="status-bar" id="statusBar"></div>
 
+    <!-- Tabs -->
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('responses')">Respuestas</div>
-        <div class="tab" onclick="switchTab('knowledge')">Conocimiento</div>
+        <div class="tab active" onclick="switchTab('responses')">💬 Respuestas</div>
+        <div class="tab" onclick="switchTab('knowledge')">🧠 Conocimiento</div>
     </div>
 
+    <!-- Formulario -->
     <div class="section">
-        <h2>Agregar nuevo</h2>
+        <h2 id="formTitle">➕ Agregar respuesta</h2>
         <div id="formFields"></div>
-        <button onclick="addItem()">Guardar</button>
+        <div class="btn-row">
+            <button onclick="addItem()" id="btnSave">💾 Guardar</button>
+            <button class="outline" onclick="clearForm()" id="btnClear" style="display:none;">Cancelar edición</button>
+        </div>
     </div>
 
+    <!-- Búsqueda -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar..." oninput="renderList()">
+    </div>
+
+    <!-- Lista -->
     <div class="section">
-        <h2>Contenido guardado</h2>
-        <div class="item-list" id="itemsList"></div>
+        <h2>📋 Contenido guardado <span style="font-size:11px;color:#777;" id="countLabel"></span></h2>
+        <div class="item-list" id="itemsList">
+            <div class="empty-state">
+                <p>📭 No hay contenido aún</p>
+                <p style="font-size:11px;color:#555;">Agrega tu primera respuesta arriba</p>
+            </div>
+        </div>
     </div>
 
-    <button class="red" onclick="logout()" style="margin-top:12px;">Cerrar sesión</button>
+    <!-- Botón exportar -->
+    <button class="green" onclick="exportAllData()" style="width:100%;margin-bottom:8px;">📋 Copiar todo para GitHub</button>
+    <button class="red" onclick="resetAll()" style="width:100%;">🗑️ Reiniciar todo</button>
 </div>
 
 <script>
-    const PASS = 'adrian2005';
+    const PASS = 'admin123';
     let currentTab = 'responses';
+    let editingId = null; // Para modo edición
 
     // ============ AUTH ============
     function login() {
         if (document.getElementById('passInput').value === PASS) {
             document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('adminPanel').style.display  = 'block';
+            document.getElementById('adminPanel').style.display = 'block';
             renderForm();
             renderList();
-            setStatus('✅ Datos cargados correctamente');
+            updateStats();
+            showStatus('✅ Bienvenido al panel de Eva', 'success');
         } else {
-            alert('Contraseña incorrecta');
+            document.getElementById('passInput').style.borderColor = '#e74c3c';
+            setTimeout(() => document.getElementById('passInput').style.borderColor = '#2a2a4a', 500);
         }
     }
 
     function logout() {
-        document.getElementById('loginScreen').style.display = 'flex';
-        document.getElementById('adminPanel').style.display  = 'none';
-        document.getElementById('passInput').value = '';
+        if (confirm('¿Cerrar sesión?')) {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('passInput').value = '';
+            editingId = null;
+        }
     }
 
     // ============ STORAGE ============
@@ -124,92 +219,180 @@
     // ============ TABS ============
     function switchTab(tab) {
         currentTab = tab;
-        document.querySelectorAll('.tab').forEach(function(t) {
-            t.classList.toggle('active', t.textContent.trim().toLowerCase().includes(tab));
+        editingId = null;
+        document.querySelectorAll('.tab').forEach(t => {
+            t.classList.toggle('active', t.textContent.toLowerCase().includes(tab === 'responses' ? 'respuestas' : 'conocimiento'));
         });
+        document.getElementById('formTitle').textContent = tab === 'responses' ? '➕ Agregar respuesta' : '➕ Agregar categoría';
         renderForm();
         renderList();
+        document.getElementById('searchInput').value = '';
     }
 
     // ============ FORMULARIOS ============
     function renderForm() {
         var f = document.getElementById('formFields');
+        document.getElementById('btnClear').style.display = editingId ? 'inline' : 'none';
+        document.getElementById('btnSave').textContent = editingId ? '✏️ Actualizar' : '💾 Guardar';
+
         if (currentTab === 'responses') {
             f.innerHTML = 
-                '<label>Categoria (debe coincidir exacto con knowledge)</label>' +
-                '<input type="text" id="f_category" placeholder="ej: saludos">' +
-                '<label>Modelo</label>' +
+                '<label>Categoría (ej: saludos, despedidas)</label>' +
+                '<input type="text" id="f_category" placeholder="ej: saludos" autocomplete="off">' +
+                '<label>Modelo de IA</label>' +
                 '<select id="f_model">' +
-                    '<option value="eva">Eva</option>' +
-                    '<option value="selene">Selene</option>' +
-                    '<option value="nyx">Nyx</option>' +
-                    '<option value="aria">Aria</option>' +
+                    '<option value="eva">🤖 Eva</option>' +
+                    '<option value="selene">🌙 Selene</option>' +
+                    '<option value="nyx">🌑 Nyx</option>' +
+                    '<option value="aria">📊 Aria</option>' +
                 '</select>' +
-                '<label>Respuesta</label>' +
-                '<textarea id="f_text" placeholder="Hola! Soy Eva..."></textarea>';
+                '<label>Texto de respuesta</label>' +
+                '<textarea id="f_text" placeholder="Escribe la respuesta que dará la IA..."></textarea>';
         } else {
             f.innerHTML = 
-                '<label>Categoria</label>' +
-                '<input type="text" id="f_category" placeholder="ej: saludos">' +
-                '<label>Palabras clave (separadas por coma)</label>' +
-                '<input type="text" id="f_keywords" placeholder="hola, hey, buenas">';
+                '<label>Categoría (ej: saludos, despedidas)</label>' +
+                '<input type="text" id="f_category" placeholder="ej: saludos" autocomplete="off">' +
+                '<label>Palabras clave (separadas por comas)</label>' +
+                '<input type="text" id="f_keywords" placeholder="hola, hey, buenas, qué tal" autocomplete="off">' +
+                '<p style="font-size:10px;color:#555;margin-top:-6px;margin-bottom:8px;">Estas palabras activarán esta categoría</p>';
         }
     }
 
-    // ============ GUARDAR ============
+    function clearForm() {
+        editingId = null;
+        renderForm();
+    }
+
+    // ============ GUARDAR / EDITAR ============
     function addItem() {
         var category = (document.getElementById('f_category')?.value || '').trim().toLowerCase();
-        if (!category) return alert('Llena la categoria');
+        if (!category) return showStatus('⚠️ Llena la categoría', 'error');
 
         if (currentTab === 'responses') {
             var model = document.getElementById('f_model').value;
             var text  = (document.getElementById('f_text')?.value || '').trim();
-            if (!text) return alert('Llena la respuesta');
+            if (!text) return showStatus('⚠️ Escribe la respuesta', 'error');
+            
             var arr = getData('responses');
-            arr.push({ id: Date.now(), category: category, model: model, text: text });
+            
+            if (editingId) {
+                // Editar existente
+                var idx = arr.findIndex(i => i.id === editingId);
+                if (idx >= 0) {
+                    arr[idx].category = category;
+                    arr[idx].model = model;
+                    arr[idx].text = text;
+                }
+                editingId = null;
+            } else {
+                // Nuevo
+                arr.push({ id: Date.now(), category: category, model: model, text: text });
+            }
+            
             saveData('responses', arr);
+            showStatus('✅ Respuesta ' + (editingId ? 'actualizada' : 'guardada'), 'success');
+
         } else {
             var kw = (document.getElementById('f_keywords')?.value || '').trim();
-            if (!kw) return alert('Llena las palabras clave');
+            if (!kw) return showStatus('⚠️ Escribe palabras clave', 'error');
+            
             var arr2 = getData('knowledge');
-            var idx = arr2.findIndex(function(k) { return k.category === category; });
-            var incoming = kw.split(',').map(function(k) { return k.trim().toLowerCase(); }).filter(Boolean);
-            if (idx >= 0) {
-                arr2[idx].keywords = Array.from(new Set(arr2[idx].keywords.concat(incoming)));
+            var incoming = kw.split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
+            
+            if (editingId) {
+                var idx = arr2.findIndex(i => i.id === editingId);
+                if (idx >= 0) {
+                    arr2[idx].category = category;
+                    arr2[idx].keywords = incoming;
+                }
+                editingId = null;
             } else {
-                arr2.push({ id: Date.now(), category: category, keywords: incoming });
+                var existIdx = arr2.findIndex(k => k.category === category);
+                if (existIdx >= 0) {
+                    arr2[existIdx].keywords = Array.from(new Set(arr2[existIdx].keywords.concat(incoming)));
+                } else {
+                    arr2.push({ id: Date.now(), category: category, keywords: incoming });
+                }
             }
+            
             saveData('knowledge', arr2);
+            showStatus('✅ Categoría ' + (editingId ? 'actualizada' : 'guardada'), 'success');
         }
 
-        setStatus('✅ Guardado correctamente');
         renderForm();
         renderList();
+        updateStats();
     }
 
-    // ============ LISTA ============
+    // ============ EDITAR ITEM ============
+    function editItem(key, id) {
+        var items = getData(key);
+        var item = items.find(i => i.id === id);
+        if (!item) return;
+        
+        editingId = id;
+        renderForm();
+        
+        document.getElementById('f_category').value = item.category || '';
+        
+        if (key === 'responses') {
+            document.getElementById('f_model').value = item.model || 'eva';
+            document.getElementById('f_text').value = item.text || '';
+        } else {
+            document.getElementById('f_keywords').value = (item.keywords || []).join(', ');
+        }
+        
+        document.getElementById('f_category').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('f_category').classList.add('edit-mode');
+        setTimeout(() => document.getElementById('f_category').classList.remove('edit-mode'), 1000);
+    }
+
+    // ============ LISTA CON BÚSQUEDA ============
     function renderList() {
         var listDiv = document.getElementById('itemsList');
-        var items   = getData(currentTab);
+        var searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
+        var items = getData(currentTab);
+
+        // Filtrar por búsqueda
+        if (searchTerm) {
+            items = items.filter(item => {
+                if (currentTab === 'responses') {
+                    return (item.text || '').toLowerCase().includes(searchTerm) ||
+                           (item.category || '').toLowerCase().includes(searchTerm) ||
+                           (item.model || '').toLowerCase().includes(searchTerm);
+                } else {
+                    return (item.category || '').toLowerCase().includes(searchTerm) ||
+                           (item.keywords || []).some(k => k.toLowerCase().includes(searchTerm));
+                }
+            });
+        }
+
+        document.getElementById('countLabel').textContent = '(' + items.length + ')';
 
         if (items.length === 0) {
-            listDiv.innerHTML = '<p style="color:#777;text-align:center;padding:20px;">No hay contenido aún</p>';
+            listDiv.innerHTML = '<div class="empty-state"><p>📭 ' + (searchTerm ? 'Sin resultados' : 'No hay contenido aún') + '</p></div>';
             return;
         }
 
         listDiv.innerHTML = items.map(function(item) {
-            var title = currentTab === 'responses'
-                ? (item.text || '').substring(0, 60)
-                : (Array.isArray(item.keywords) ? item.keywords.join(', ') : '');
-            var meta = currentTab === 'responses'
-                ? item.category + ' — ' + item.model
-                : 'Categoria: ' + item.category;
+            var title, meta, badgeClass = '';
+            if (currentTab === 'responses') {
+                title = (item.text || '').substring(0, 70);
+                meta = '📁 ' + item.category + ' • <span class="badge ' + item.model + '">' + item.model + '</span>';
+            } else {
+                title = '📁 ' + item.category;
+                meta = '🔑 ' + (Array.isArray(item.keywords) ? item.keywords.slice(0, 5).join(', ') + (item.keywords.length > 5 ? '...' : '') : '');
+            }
+            
             return '<div class="item-card">' +
                 '<div class="item-info">' +
                 '<div class="item-title">' + esc(title) + '</div>' +
-                '<div class="item-meta">' + esc(meta) + '</div>' +
+                '<div class="item-meta">' + meta + '</div>' +
                 '</div>' +
-                '<button class="small red" onclick="deleteItem(\'' + currentTab + '\',' + item.id + ')">Eliminar</button>' +
+                '<div class="item-actions">' +
+                '<button class="blue" onclick="editItem(\'' + currentTab + '\',' + item.id + ')">✏️</button>' +
+                '<button class="red" onclick="deleteItem(\'' + currentTab + '\',' + item.id + ')">🗑️</button>' +
+                '</div>' +
                 '</div>';
         }).join('');
     }
@@ -217,20 +400,78 @@
     // ============ ELIMINAR ============
     function deleteItem(key, id) {
         if (!confirm('¿Eliminar este item?')) return;
-        var arr = getData(key).filter(function(i) { return i.id !== id; });
+        var arr = getData(key).filter(i => i.id !== id);
         saveData(key, arr);
-        setStatus('🗑️ Eliminado');
+        showStatus('🗑️ Eliminado correctamente', 'success');
         renderList();
+        updateStats();
+    }
+
+    // ============ EXPORTAR PARA GITHUB ============
+    function exportAllData() {
+        var knowledge = getData('knowledge');
+        var responses = getData('responses');
+        
+        var output = '══════════════════════════════\n';
+        output += '📄 COPIA ESTO EN data/knowledge.json\n';
+        output += '══════════════════════════════\n';
+        output += JSON.stringify(knowledge, null, 2);
+        output += '\n\n══════════════════════════════\n';
+        output += '📄 COPIA ESTO EN data/responses.json\n';
+        output += '══════════════════════════════\n';
+        output += JSON.stringify(responses, null, 2);
+        
+        // Copiar al portapapeles
+        navigator.clipboard.writeText(output).then(function() {
+            showStatus('✅ JSON copiado al portapapeles. ¡Pégalo en GitHub!', 'success');
+            alert('✅ JSON copiado!\n\nAhora ve a GitHub y pégalo en:\n• data/knowledge.json\n• data/responses.json');
+        }).catch(function() {
+            // Fallback: mostrar en modal
+            var modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;';
+            modal.innerHTML = '<h3 style="color:#D48A72;margin-bottom:10px;">📋 JSON Generado</h3>' +
+                '<textarea id="jsonOutput" style="width:95%;height:350px;background:#0f0f23;color:#fff;border:1px solid #2a2a4a;border-radius:10px;padding:12px;font-size:11px;margin-bottom:10px;">' + output + '</textarea>' +
+                '<button onclick="navigator.clipboard.writeText(document.getElementById(\'jsonOutput\').value);alert(\'✅ Copiado!\')" style="background:#D48A72;color:#0a0a1a;padding:12px 24px;border:none;border-radius:10px;font-weight:700;margin:5px;">📋 Copiar</button>' +
+                '<button onclick="this.parentElement.remove()" style="background:#e74c3c;color:#fff;padding:12px 24px;border:none;border-radius:10px;margin:5px;">❌ Cerrar</button>';
+            document.body.appendChild(modal);
+        });
+    }
+
+    // ============ REINICIAR ============
+    function resetAll() {
+        if (confirm('⚠️ ¿Estás seguro? Esto borrará TODAS las respuestas y categorías.')) {
+            if (confirm('⚠️ Última advertencia. ¿Eliminar todo?')) {
+                localStorage.removeItem('eva_responses');
+                localStorage.removeItem('eva_knowledge');
+                showStatus('🗑️ Todo reiniciado', 'success');
+                renderForm();
+                renderList();
+                updateStats();
+            }
+        }
+    }
+
+    // ============ STATS ============
+    function updateStats() {
+        document.getElementById('statResponses').textContent = getData('responses').length;
+        document.getElementById('statKnowledge').textContent = getData('knowledge').length;
     }
 
     // ============ UTILS ============
-    function setStatus(msg) { 
-        document.getElementById('statusBar').textContent = msg; 
-        setTimeout(function() { document.getElementById('statusBar').textContent = ''; }, 3000);
+    function showStatus(msg, type) {
+        var bar = document.getElementById('statusBar');
+        bar.textContent = msg;
+        bar.className = 'status-bar ' + (type || 'success');
+        bar.style.display = 'block';
+        setTimeout(function() { bar.style.display = 'none'; }, 2500);
     }
+
     function esc(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
+
+    // ============ INIT ============
+    updateStats();
 </script>
 </body>
 </html>
